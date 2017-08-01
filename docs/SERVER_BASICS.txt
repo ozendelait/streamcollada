@@ -1,0 +1,88 @@
+#######################################
+### RUN SERVER
+#######################################
+- Commandline -> cs to root
+- >>> gulp          // Compiles TypeScript once
+- >>> gulp watch    // Compiles TypeScript files everytime one changes
+- >>> nodemon       // Runs the NodeJS server
+
+#######################################
+### NODE JS
+#######################################
+- Server side JavaScript
+- See "Express" module for server setup
+- Structure:
+    * docs          // Docs -> Keep it up-to-date
+    * node_modules  // Node modules -> dont touch
+    * public        // Or "www" or "static" -> files for client
+    * src           // All TypeScript files
+    * --- routes    // Each file describes one route (www.mysite.com/<route1>)
+    * --- server.ts // Server/ Main file to be run
+    * build         // All TypeScript converted JavaScript files, corresponding to the "src" tree
+    * --- definitions   // Type-files for TypeScript/ Intellisense (Similar to C++ src vs header) -> dont touch
+    * --- views     // HTML/ ejs template files
+    * --- routes    // see src/routes
+    * --- server.js // see src/server.ts 
+                        
+
+#######################################
+### NPM
+#######################################
+- JavaScript package manager
+- Installed libs/ modules will get added to "package.json"
+- Commandline:
+    * >>>npm install <module> --save // Install and save a module
+    * >>>npm install @types/<module> --save-dev // Install the corresponding types-file (if available) for TypeScript
+    * >>>npm install // Install everything listed in "package.json"
+
+
+#######################################
+### EXPRESS
+#######################################
+- NodeJs-Framework to make everything easier
+- Integrates a lot of middleware modules
+- Feature we use:
+    * Handle http request
+    * Handle routing
+    * Use templating engine
+    * Use form parsing
+
+#######################################
+### EJS
+#######################################
+- Embedded JavaScript/ Templating within html
+- <% %> executes JavaScript
+- <%= %> adds HTML/ outputs variables
+- https://github.com/tj/ejs
+
+
+#######################################
+### GULP
+#######################################
+- Toolkit for automating tasks
+- gulpfile.js -> add tasks like "compile TypeScript to Javascript", "merge and minify all files, save to dir"
+
+
+#######################################
+### TypeScript
+#######################################
+- Superset of JavaScript
+- Enables the use of latest JavaScript versions (ECMASCRIPT6) 
+- Set of handy features on top of latest JavaScript versions
+- Static typing enables intellisense
+- Compiles to whatever JavaScript version we set
+
+
+#######################################
+### LESS
+#######################################
+- CSS preprocessor - superset of CSS
+- +variables +mixins +functions +imports
+- Compiles to pure CSS
+
+
+#######################################
+### WebStorm
+#######################################
+- JetBrains JavaScript editor
+- Knows how to handle JS and TS -> no need, just a recommendation :)

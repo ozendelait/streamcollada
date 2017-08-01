@@ -1,0 +1,17 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+    <meta name="description" content="3d Mesh Streaming">
+    <meta name="author" content="Kevin Hambrecht, Sascha Stelling">
+
+    <!-- Create an include link for every specified css-href -->
+    <% css.forEach( (csshref) => { %>
+                <link rel="stylesheet" href="css/<%= csshref %>">
+    <% }) %>
+
+</head>
+
+<body>
