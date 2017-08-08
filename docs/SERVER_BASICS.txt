@@ -1,4 +1,14 @@
 #######################################
+### INSTALL
+#######################################
+- Clone 'streamcollada' repository on GitHub (https://github.com/ozendelait/streamcollada)
+- >>> git clone https://github.com/ozendelait/streamcollada.git
+- Install Node.js (https://nodejs.org/en/download/package-manager/)
+- Install npm
+- >> pacman -S nodejs npm // On Arch Linux
+- >> npm install    // Let npm install all required packages for this project
+
+#######################################
 ### RUN SERVER
 #######################################
 - Commandline -> cs to root
