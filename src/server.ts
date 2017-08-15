@@ -47,13 +47,12 @@ app.listen(PORT, () => {
     console.log("Server started on port " + PORT);
 });
 
-
 // Routes
 
 let data:any = {
     title: "StreamCollada",
     css: ["main.css"],
-    js: ["three.min.js", "index.js", "collada_stream.js"]
+    js: ["three.min.js", "bundle.js"]  // ["three.min.js", "index.js", "collada_stream.js"]
 };
 
 app.get("/", (req, res) => {

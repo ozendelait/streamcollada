@@ -31,7 +31,7 @@ app.listen(PORT, function () {
 var data = {
     title: "StreamCollada",
     css: ["main.css"],
-    js: ["three.min.js", "index.js", "collada_stream.js"]
+    js: ["three.min.js", "bundle.js"]
 };
 app.get("/", function (req, res) {
     data["nth"] = Math.round(Math.random() * 100);

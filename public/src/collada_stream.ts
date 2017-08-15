@@ -1,22 +1,32 @@
-const THREE = require("three");
+
+import THREE = require("three");
 
 export class ColladaStream{
+    protected scene: THREE.Scene;
+    protected camera: THREE.Camera;
+    protected renderer: THREE.WebGLRenderer;
     protected loader: THREE.ColladaLoader;
 
     constructor(){
+        this.scene = new THREE.Scene();
         this.loader = new THREE.ColladaLoader();
+        this.camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000 );
+        this.camera.position.set(0, 0, 5);
+    }
 
+    public loadFile(file: string) : void{
         this.loader.load(
-            // resource URL
-            'models/collada/monster/monster.dae',
-            // Function when resource is loaded
-            function ( collada ) {
-                scene.add( collada.scene );
+            file,   // resource URL
+            function ( collada ) {  // Function when resource is loaded
+                this.scene.add( collada.scene );
             },
-            // Function called when download progresses
-            function ( xhr ) {
+            function ( xhr ) {  // Function when resource is loaded
                 console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
             }
         );
+    }
+
+    protected render() : void{
+        this.renderer.render(this.scene, this.camera);
     }
 }

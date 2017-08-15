@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var THREE = require("three");
-console.log("TEST");
 var ColladaStream = (function () {
     function ColladaStream() {
         this.scene = new THREE.Scene();
@@ -21,3 +20,4 @@ var ColladaStream = (function () {
     };
     return ColladaStream;
 }());
+exports.ColladaStream = ColladaStream;

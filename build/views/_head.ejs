@@ -7,6 +7,11 @@
     <meta name="description" content="3d Mesh Streaming">
     <meta name="author" content="Kevin Hambrecht, Sascha Stelling">
 
+    <script>
+        // TypeScript 2.2 requires 'exports' global variable.
+        var exports = {};
+    </script>
+
     <!-- Create an include link for every specified css-href -->
     <% css.forEach( (csshref) => { %>
                 <link rel="stylesheet" href="css/<%= csshref %>">
