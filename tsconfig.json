@@ -4,13 +4,13 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
-    "declaration": true,
+    "declaration": false,   // Not good yet
     "alwaysStrict": true,
-    "removeComments": true
+    "removeComments": true,
+    "allowJs": true         // Cause of this
   },
   "include": [
-    "src/**/*.ts",
-    "public/src/**/*.ts"
+    "src/ts/*"
   ],
   "exclude": [
     "node_modules"

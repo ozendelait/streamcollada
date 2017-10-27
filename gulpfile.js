@@ -1,41 +1,53 @@
-let path = require("path");
-let gulp = require("gulp");
-let ts = require("gulp-typescript");
-let browserify = require('gulp-browserify');
-let merge = require("merge2");
-let rename = require('gulp-rename');
+const PATHS = require("./config/paths");
+const gulp = require("gulp");
+const ts = require("gulp-typescript");
+const less = require("gulp-less");
+const browserify = require('gulp-browserify');
+const merge = require("merge2");
+const rename = require('gulp-rename');
+const clean = require("gulp-clean");
 
+const ts_project = ts.createProject("tsconfig.json");
 
-let ts_server_config = ts.createProject("tsconfig.json");
-let ts_public_config = ts.createProject("tsconfig.json");
-const TS_SERVER_SRC = "src/**/*.ts";
-const TS_SERVER_DEST = "build/";
-const TS_PUBLIC_SRC = "public/src/**/*.ts";
-const TS_PUBLIC_DEST = "build/js/";
-
-gulp.task("typescript", () => {
-    let ts_server = gulp.src(TS_SERVER_SRC).pipe(ts_server_config());
-    let ts_public = gulp.src(TS_PUBLIC_SRC).pipe(ts_public_config());
-
+gulp.task("typescript", function() {
+    let proj = ts_project.src().pipe(ts_project());
     return merge([
-        ts_server.dts.pipe(gulp.dest(path.join(TS_SERVER_DEST, "definitions"))),
-        ts_server.js.pipe(gulp.dest(TS_SERVER_DEST)),
-        ts_public.js.pipe(gulp.dest(TS_PUBLIC_DEST))
+        proj.js.pipe(gulp.dest(PATHS.JS_DIR)),
+        proj.dts.pipe(gulp.dest(PATHS.DEFINITIONS_DIR))
     ]);
 });
 
-gulp.task("watch", () => {
-    gulp.watch("./src/**/*.ts", ["typescript"]);
+/*
+gulp.task("watch", function(){
+    gulp.watch(ts_project.src(), ["typescript", "browserify"]);
 });
 
-gulp.task('browserify', function() {
+gulp.task('browserify', function(){
     // Single entry point to browserify
-    gulp.src('build/js/index.js')
+    gulp.src(path.join(TS_DEST_DIR, "index.js"))
         .pipe(browserify({
             insertGlobals : true
         }))
         .pipe(rename("bundle.js"))
-        .pipe(gulp.dest('public/js'));
+        .pipe(gulp.dest("."));
+});
+*/
+
+// Clear compiled css and js files
+gulp.task("clear", function(){
+   return merge([
+       gulp.src(PATHS.DEFINITIONS_DIR + "/**/*", {read: false}),
+       gulp.src(PATHS.CSS_DIR + "/**/*", {read: false}),
+       gulp.src(PATHS.JS_DIR + "/**/*", {read: false})
+   ]).pipe(clean());
 });
 
-gulp.task("default", ["typescript"]);
+gulp.task('less', function () {
+    return gulp.src(PATHS.LESS_DIR + "/**/*")
+        .pipe(less({
+            paths: [PATHS.LESS_DIR]
+        }))
+        .pipe(gulp.dest(PATHS.CSS_DIR));
+});
+
+//gulp.task("default", ["typescript", "browserify"]);
