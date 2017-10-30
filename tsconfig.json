@@ -9,9 +9,6 @@
     "removeComments": true,
     "allowJs": true         // Cause of this
   },
-  "include": [
-    "src/ts/*"
-  ],
   "exclude": [
     "node_modules"
   ]

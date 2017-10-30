@@ -56,6 +56,6 @@ app.get("/", (req, res) => {
     res.render("index", data);
 }).post("/", (req, res) => {
     data["nth"]= Math.round(Math.random()*100);
-    console.log("FILE UPLOAD: ", req.fields, req.files);
+    //console.log("FILE UPLOAD: ", req.fields, req.files);
     res.render("index", data);
 });

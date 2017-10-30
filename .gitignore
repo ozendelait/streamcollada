@@ -1,6 +1,8 @@
 # Node
 node_modules/*
-build/definitions/*
+dist/definitions/*
+dist/static/css/*
+dist/static/js/*
 
 #IDE
 .idea/
