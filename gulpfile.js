@@ -22,23 +22,6 @@ function gulpSrcRecursive(path, opt){
 }
 
 
-gulp.task("minifyjs", function(){
-    // Single entry point to browserify
-    let browserified = gulp.src(BROWSERIFY_ENTRY)
-        .pipe(browserify({
-            insertGlobals : true
-        }));
-    // Clear the single *.js files
-    let clearjs = gulpSrcRecursive(PATHS.PUBLIC_JS_DIR, {read: false, ending: ".js"})
-        .pipe(clean());
-
-    // Output the bundled js file
-    return merge([browserified, clearjs])
-        .pipe(rename(BROWSERIFY_OUTPUT))
-        .pipe(gulp.dest(PATHS.PUBLIC_JS_DIR));
-});
-
-
 gulp.task("build:css", function() {
     return gulpSrcRecursive(PATHS.LESS_DIR)
     .pipe(less({
@@ -54,7 +37,21 @@ gulp.task("build:publicjs", function() {
         proj.dts.pipe(gulp.dest(PATHS.DEFINITIONS_DIR))
     ]);
 });
-gulp.task("build:minifyjs", [])
+gulp.task("minifyjs", ["build:publicjs"], function(){
+    // Single entry point to browserify
+    let browserified = gulp.src(BROWSERIFY_ENTRY)
+        .pipe(browserify({
+            insertGlobals : true
+        }));
+    // Clear the single *.js files
+    let clearjs = gulpSrcRecursive(PATHS.PUBLIC_JS_DIR, {read: false, ending: ".js"})
+        .pipe(clean());
+
+    // Output the bundled js file
+    return merge([browserified, clearjs])
+        .pipe(rename(BROWSERIFY_OUTPUT))
+        .pipe(gulp.dest(PATHS.PUBLIC_JS_DIR));
+});
 gulp.task("build:serverjs", function() {
     const ts_project = ts.createProject("tsconfig.json");
     let proj = gulpSrcRecursive(PATHS.SERVER_TS_DIR).pipe(ts_project());
@@ -63,7 +60,7 @@ gulp.task("build:serverjs", function() {
         proj.dts.pipe(gulp.dest(PATHS.DEFINITIONS_DIR))
     ]);
 });
-gulp.task("build:js", ["build:publicjs", "build:serverjs"]);
+gulp.task("build:js", ["minifyjs", "build:serverjs"]);
 gulp.task("build", ["clear", "build:js", "build:css"]);
 
 
@@ -71,7 +68,7 @@ gulp.task("watch:less", function(){
     gulp.watch(pathRecursive(PATHS.LESS_DIR), ["build:css"]);
 });
 gulp.task("watch:publicts", function(){
-    gulp.watch(pathRecursive(PATHS.PUBLIC_TS_DIR), ["build:publicjs"]);
+    gulp.watch(pathRecursive(PATHS.PUBLIC_TS_DIR), ["minifyjs"]);
 });
 gulp.task("watch:serverts", function(){
     gulp.watch(pathRecursive(PATHS.SERVER_TS_DIR), ["build:serverjs"]);
