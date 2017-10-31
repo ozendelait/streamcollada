@@ -4,12 +4,13 @@ import * as path from "path";
 
 const formidable  = require("express-formidable");
 const lessMiddleware = require("less-middleware");
-const PATHS = require( path.join(process.cwd(), "/config/paths") );
+const PATHS = require( path.join(process.cwd(), "config", "paths") );
 
 const DEBUG = true;
 const PORT = 8080;
 
 let app = express();
+console.log("So far so good");
 
 // Template/ View Engine
 app.set("views", PATHS.VIEWS_DIR);
@@ -47,7 +48,7 @@ app.listen(PORT, () => {
 let data:any = {
     title: "StreamCollada",
     css: [path.join("css", "main.css")],
-    js: [path.join("js", "index.js")]  // ["three.min.js", "index.js", "collada_stream.js"]
+    js: [path.join("js", "bundle.js")]  // ["three.min.js", "index.js", "collada_stream.js"]
 };
 
 

@@ -44,11 +44,11 @@ gulp.task("minifyjs", ["build:publicjs"], function(){
             insertGlobals : true
         }));
     // Clear the single *.js files
-    let clearjs = gulpSrcRecursive(PATHS.PUBLIC_JS_DIR, {read: false, ending: ".js"})
-        .pipe(clean());
+    //let clearjs = gulpSrcRecursive(PATHS.PUBLIC_JS_DIR, {read: false, ending: ".js"})
+    //    .pipe(clean());
 
     // Output the bundled js file
-    return merge([browserified, clearjs])
+    return merge([browserified])
         .pipe(rename(BROWSERIFY_OUTPUT))
         .pipe(gulp.dest(PATHS.PUBLIC_JS_DIR));
 });
