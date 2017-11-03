@@ -3,6 +3,8 @@ console.log("init collada_stream.ts");
 import * as THREE from 'three';
 import {OrbitControls} from "three-orbitcontrols-ts";
 const ColladaLoader = require('three-collada-loader');
+const JSZip= require("jszip");
+const ajax = require("pajax");
 
 
 export class ColladaStream{
@@ -11,7 +13,7 @@ export class ColladaStream{
     protected camera: THREE.Camera;
     protected orbit: OrbitControls;
     protected renderer: THREE.WebGLRenderer;
-    protected loader: THREE.ColladaLoader;
+    protected cloader: THREE.ColladaLoader;
     protected container: HTMLElement;
 
     protected obj : THREE.Object3D;
@@ -21,8 +23,8 @@ export class ColladaStream{
 
         this.scene = new THREE.Scene();
 
-        this.loader = new ColladaLoader();
-        this.loader.options.convertUpAxis = true;
+        this.cloader = new ColladaLoader();
+        this.cloader.options.convertUpAxis = true;
 
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
@@ -61,17 +63,35 @@ export class ColladaStream{
         this.render();
     }
 
-    public loadFile(file: string) : void{
-        this.loader.load(
+    public loadZip = (file: string) : void => {
+        console.log("ColladaStrean::loadZip");
+        let that = this;
+
+        ajax.get(file, null, {
+            responseType : "blob",
+        }).then((response: any)=>{
+            JSZip.loadAsync(response).then(function (zip: any) {
+                zip.file(/.dae/).forEach((obj: any)=>{
+                    return obj.async("text")
+                        .then((text: string)=>{
+                        that.loadText(text);
+                    });
+                });
+            });
+        });
+    }
+
+    public loadText = (content: string) : void => {
+        console.log("ColladaStrean::loadText");
+        let result = this.cloader.parse(content);
+        this.loadColladaModel(result);
+    }
+
+    public loadFile = (file: string) : void => {
+        console.log("ColladaStrean::loadFile");
+        this.cloader.load(
             file,   // resource URL
-            (collada: THREE.ColladaModel) => {  // Function when resource is loaded
-                this.obj = collada.scene;
-                this.obj.up = new THREE.Vector3(0, 0, 0);
-                this.obj.scale.x = this.obj.scale.y = this.obj.scale.z = 150;
-                this.obj.updateMatrix();
-                console.log(this.obj)
-                this.scene.add(this.obj);
-            },
+            this.loadColladaModel,
             (xhr: any) => {  // Function when resource is loaded
                 let percent = xhr.loaded / xhr.total * 100;
                 console.log(percent + '% loaded');
@@ -79,11 +99,16 @@ export class ColladaStream{
         );
     }
 
+    public loadColladaModel = (model: THREE.ColladaModel) : void => {
+        console.log("ColladaStrean::loadColladaModel");
+        this.obj = model.scene;
+        this.obj.up = new THREE.Vector3(0, 0, 0);
+        this.obj.scale.x = this.obj.scale.y = this.obj.scale.z = 150;
+        this.obj.updateMatrix();
+        this.scene.add(this.obj);
+    }
+
     protected render = () : void => {
-        //if(this.obj){
-        //    this.obj.rotateX(1);
-        //    this.obj.rotateY(1);
-        //}
         this.orbit.update();
         this.renderer.render(this.scene, this.camera);
 
