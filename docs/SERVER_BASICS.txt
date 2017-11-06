@@ -12,9 +12,26 @@
 ### RUN SERVER
 #######################################
 - Commandline -> cs to root
-- >>> gulp          // Compiles TypeScript once
-- >>> gulp watch    // Compiles TypeScript files everytime one changes
-- >>> nodemon       // Runs the NodeJS server
+- >>> gulp                  // Clears, compiles everything, goes into watch mode
+- >>> gulp clear            // Clears everything
+- >>> gulp clear:js
+- >>> gulp clear:publicjs
+- >>> gulp clear:serverjs
+- >>> gulp clear:css
+- >>> gulp clear:definitions
+- >>> gulp watch            // Watches everything (recompiles automatically on change)
+- >>> gulp watch:ts
+- >>> gulp watch:serverts
+- >>> gulp watch:publicts
+- >>> gulp watch:less
+- >>> gulp build            // Compiles everything
+- >>> gulp build:js
+- >>> gulp build:serverjs
+- >>> gulp minifyjs         // Bundles all static js files into one minified version
+- >>> gulp build:public
+- >>> gulp build:css
+
+- >>> nodemon               // Runs the NodeJS server
 
 #######################################
 ### NODE JS

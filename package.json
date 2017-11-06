@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/body-parser": "^1.16.4",
     "@types/express-formidable": "^1.0.0",
+    "@types/gulp": "^3.8.34",
     "@types/less": "0.0.32",
     "@types/less-middleware": "^2.0.29",
     "@types/three": "^0.84.19",
