@@ -35,6 +35,7 @@
     "less": "^2.7.3",
     "less-middleware": "^2.2.0",
     "merge2": "^1.1.0",
+    "multer": "^1.3.0",
     "node-tsc": "0.0.14",
     "nodejs": "0.0.0",
     "pajax": "^5.0.3",

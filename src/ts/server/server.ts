@@ -4,6 +4,7 @@ import * as path from "path";
 
 const formidable  = require("express-formidable");
 const lessMiddleware = require("less-middleware");
+const multer = require("multer");
 const PATHS = require( path.join(process.cwd(), "config", "paths") );
 
 const DEBUG = true;
@@ -17,19 +18,8 @@ app.set("views", PATHS.VIEWS_DIR);
 app.set("view engine", "ejs");
 app.engine("html", require("ejs").renderFile);
 
-// Less
-//app.use(lessMiddleware(PATHS.LESS_DIR, {
-//    dest: PATHS.CSS_DIR,
-//    compress : true,
-//    debug: DEBUG
-//}));
-
 // Static/ Public Folder ("www")
 app.use(express.static(PATHS.PUBLIC_DIR));
-
-// Body Parser
-//app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({extended: false}));
 
 // Form Parser
 app.use(formidable({
@@ -44,7 +34,6 @@ app.listen(PORT, () => {
 });
 
 // Routes
-
 let data:any = {
     title: "StreamCollada",
     css: [path.join("css", "main.css")],
@@ -52,11 +41,15 @@ let data:any = {
 };
 
 
+let upload = multer({
+   dest: PATHS.RES_DIR
+});
 app.get("/", (req, res) => {
     data["nth"]= Math.round(Math.random()*100);
     res.render("index", data);
-}).post("/", (req, res) => {
+}).post("/", upload.any() ,(req, res) => {
     data["nth"]= Math.round(Math.random()*100);
-    //console.log("FILE UPLOAD: ", req.fields, req.files);
+    console.log(Object.keys(req));
+    console.log(req.files)
     res.render("index", data);
 });
