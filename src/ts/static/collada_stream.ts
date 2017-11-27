@@ -1,5 +1,3 @@
-console.log("init collada_stream.ts");
-
 import * as THREE from 'three';
 import {OrbitControls} from "three-orbitcontrols-ts";
 const ColladaLoader = require('three-collada-loader');
@@ -64,7 +62,6 @@ export class ColladaStream{
     }
 
     public loadZip = (file: string) : void => {
-        console.log("ColladaStrean::loadZip");
         let that = this;
 
         ajax.get(file, null, {
@@ -82,30 +79,33 @@ export class ColladaStream{
     }
 
     public loadText = (content: string) : void => {
-        console.log("ColladaStrean::loadText");
         let result = this.cloader.parse(content);
         this.loadColladaModel(result);
     }
 
     public loadFile = (file: string) : void => {
-        console.log("ColladaStrean::loadFile");
         this.cloader.load(
             file,   // resource URL
             this.loadColladaModel,
             (xhr: any) => {  // Function when resource is loaded
-                let percent = xhr.loaded / xhr.total * 100;
-                console.log(percent + '% loaded');
+                //let percent = xhr.loaded / xhr.total * 100;
+                //console.log(percent + '% loaded');
             }
         );
     }
 
     public loadColladaModel = (model: THREE.ColladaModel) : void => {
-        console.log("ColladaStrean::loadColladaModel");
         this.obj = model.scene;
         this.obj.up = new THREE.Vector3(0, 0, 0);
         this.obj.scale.x = this.obj.scale.y = this.obj.scale.z = 150;
         this.obj.updateMatrix();
         this.scene.add(this.obj);
+    }
+
+    public clearScene = () : void =>{
+        while(this.scene.children.length > 0){
+            this.scene.remove(this.scene.children[0]);
+        }
     }
 
     protected render = () : void => {
@@ -115,6 +115,3 @@ export class ColladaStream{
         requestAnimationFrame(this.render);
     }
 }
-
-
-console.log("end collada_steam.ts");
