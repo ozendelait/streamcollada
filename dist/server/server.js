@@ -39,9 +39,6 @@ app.get("/", function (req, res) {
     res.render("index", data);
 }).post("/", up, function (req, res) {
     console.log("Multer");
-    req.files.forEach(function (key) {
-        console.log(key);
-    });
     res.send({ "I said": "well done" });
 }).post("/", function (req, res) {
     console.log("Some post request");

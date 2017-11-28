@@ -15,6 +15,7 @@ export class ColladaStream{
     protected container: HTMLElement;
 
     protected obj : THREE.Object3D;
+    protected loaded_obj : THREE.Object3D
 
     constructor(container: HTMLElement){
         this.container = container;
@@ -43,23 +44,12 @@ export class ColladaStream{
 
         this.container.appendChild(this.renderer.domElement);
 
-
-        // Add some lights to the scene
-        var directionalLight = new THREE.DirectionalLight(0xeeeeee , 1.0);
-        directionalLight.position.x = 1;
-        directionalLight.position.y = 0;
-        directionalLight.position.z = 0;
-        this.scene.add( directionalLight );
-
-        var directionalLight2 = new THREE.DirectionalLight(0xeeeeee, 2.0);
-        // A different way to specify the position:
-        directionalLight2.position.set(-1, 0, 1);
-        this.scene.add( directionalLight2 );
-
-
+        this.addLights();
 
         this.render();
     }
+
+    public onLoaded = () : void => {}
 
     public loadZip = (file: string) : void => {
         let that = this;
@@ -95,17 +85,40 @@ export class ColladaStream{
     }
 
     public loadColladaModel = (model: THREE.ColladaModel) : void => {
-        this.obj = model.scene;
-        this.obj.up = new THREE.Vector3(0, 0, 0);
-        this.obj.scale.x = this.obj.scale.y = this.obj.scale.z = 150;
-        this.obj.updateMatrix();
+        this.loaded_obj = model.scene;
+        this.loaded_obj.up = new THREE.Vector3(0, 0, 0);
+        this.loaded_obj.scale.x = this.loaded_obj.scale.y = this.loaded_obj.scale.z = 150;
+        this.loaded_obj.updateMatrix();
+        this.onLoaded();
+    }
+
+    public addLoaded = () : void => {
+        this.obj = this.loaded_obj;
         this.scene.add(this.obj);
+    }
+    public removeLoaded = () : void =>{
+        if(this.obj)
+            this.scene.remove(this.obj);
     }
 
     public clearScene = () : void =>{
         while(this.scene.children.length > 0){
             this.scene.remove(this.scene.children[0]);
         }
+    }
+
+    public addLights = () : void => {
+        // Add some lights to the scene
+        let directionalLight = new THREE.DirectionalLight(0xeeeeee , 1.0);
+        directionalLight.position.x = 1;
+        directionalLight.position.y = 0;
+        directionalLight.position.z = 0;
+        this.scene.add( directionalLight );
+
+        let directionalLight2 = new THREE.DirectionalLight(0xeeeeee, 2.0);
+        // A different way to specify the position:
+        directionalLight2.position.set(-1, 0, 1);
+        this.scene.add( directionalLight2 );
     }
 
     protected render = () : void => {

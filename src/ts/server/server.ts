@@ -37,10 +37,10 @@ let data:any = {
 
 let storage_mem = multer.memoryStorage();
 let storage_disk =   multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: function (req:any, file:string, cb:any) {
         cb(null, "dist/static/res/")
     },
-    filename: function (req, file, cb) {
+    filename: function (req:any, file:string, cb:any) {
         cb(null, "test.zip")//file.originalname)
     }
 });
@@ -49,14 +49,14 @@ let up = multer({
 
 }).any();
 
-app.get("/", (req, res) => {
+app.get("/", (req:any, res:any) => {
     data["nth"]= Math.round(Math.random()*100);
     res.render("index", data);
 }).post("/", up,(req:any, res:any) => {
     console.log("Multer");
-    req.files.forEach((key:any)=>{
-       console.log(key);
-    });
+    //req.files.forEach((key:any)=>{
+    //   console.log(key);
+    //});
     res.send({"I said": "well done"})
     //console.log(req.file, req.files, req.fields, req.body)
 }).post("/", (req:any, res:any)=>{
