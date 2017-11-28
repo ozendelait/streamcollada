@@ -16,7 +16,7 @@ FILE2 = "res/sphere.zip"
 
 def monitorCallback(monitor):
     pass
-    #print("%s%%\t(%s / %s)" %(int((monitor.bytes_read/monitor.len)*100), monitor.bytes_read, monitor.len))
+     #print("%s%%\t(%s / %s)" %(int((monitor.bytes_read/monitor.len)*100), monitor.bytes_read, monitor.len))
 
 
 def sendFile(file):
