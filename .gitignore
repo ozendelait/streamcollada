@@ -1,8 +1,8 @@
 # Node
 node_modules/*
-dist/definitions/*
-dist/static/css/*
-dist/static/js/*
+client/dist/definitions/*
+client/dist/static/css/*
+client/dist/static/js/*
 
 #IDE
 .idea/
