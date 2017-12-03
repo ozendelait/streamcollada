@@ -51,22 +51,23 @@ export class ColladaStream{
 
     public onLoaded = () : void => {}
 
-    public loadZip = (file: string) : void => {
+    public loadZip = (file: string, method="get") : void => {
         let that = this;
 
-        ajax.get(file, null, {
+        ajax[method](file, null, {
             responseType : "blob",
         }).then((response: any)=>{
             JSZip.loadAsync(response).then(function (zip: any) {
                 zip.file(/.dae/).forEach((obj: any)=>{
                     return obj.async("text")
                         .then((text: string)=>{
-                        that.loadText(text);
-                    });
+                            that.loadText(text);
+                        });
                 });
             });
         });
     }
+
 
     public loadText = (content: string) : void => {
         let result = this.cloader.parse(content);

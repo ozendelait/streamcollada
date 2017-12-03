@@ -2,7 +2,7 @@ import CSTREAM = require("./collada_stream");
 
 
 function refresh(){
-    stream.loadZip("localhost:7070");
+    stream.loadZip("http://localhost:7070/", "post");
 }
 
 let stream = new CSTREAM.ColladaStream(document.body);
