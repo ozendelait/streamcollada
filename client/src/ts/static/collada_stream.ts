@@ -56,6 +56,9 @@ export class ColladaStream{
 
         ajax[method](file, null, {
             responseType : "blob",
+            headers : {
+                cache: false
+            }
         }).then((response: any)=>{
             JSZip.loadAsync(response).then(function (zip: any) {
                 zip.file(/.dae/).forEach((obj: any)=>{
