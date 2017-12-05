@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from "three-orbitcontrols-ts";
-const ColladaLoader = require('three-collada-loader');
+//const ColladaLoader = require('three-collada-loader');
+import CustomColladaLoader = require("./custom_collada_loader");
 const JSZip= require("jszip");
 const ajax = require("pajax");
 
@@ -11,7 +12,7 @@ export class ColladaStream{
     protected camera: THREE.Camera;
     protected orbit: OrbitControls;
     protected renderer: THREE.WebGLRenderer;
-    protected cloader: THREE.ColladaLoader;
+    protected cloader: any;
     protected container: HTMLElement;
 
     protected obj : THREE.Object3D;
@@ -22,14 +23,14 @@ export class ColladaStream{
 
         this.scene = new THREE.Scene();
 
-        this.cloader = new ColladaLoader();
+        this.cloader = new CustomColladaLoader();
         this.cloader.options.convertUpAxis = true;
 
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
 
         this.camera = new THREE.PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 1, 10000 );
-        this.camera.position.z = 1000;
+        this.camera.position.z = 2500;
 
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
         // How far you can orbit vertically, upper and lower limits.
@@ -61,6 +62,7 @@ export class ColladaStream{
             }
         }).then((response: any)=>{
             JSZip.loadAsync(response).then(function (zip: any) {
+                //console.log(zip);
                 zip.file(/.dae/).forEach((obj: any)=>{
                     return obj.async("text")
                         .then((text: string)=>{

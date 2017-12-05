@@ -49,7 +49,7 @@ app.get("/", (req:any, res:any) => {
     res.render("index", data);
 }).post("/", (req:any, res:any) => {
     console.log("Post request");
-    res.sendFile("ball.zip", options, (err:any)=>{
+    res.sendFile("sphere.zip", options, (err:any)=>{
         console.log("sent file");
     })
 });
