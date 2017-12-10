@@ -60,28 +60,32 @@ export class ColladaStream{
 
     public onLoaded = () : void => {}
 
-    public loadZip = (file: string, method="get", callback=this.loadText) : void => {
+    public loadZip = (file: string, method="get") : void => {
         let that = this;
 
         ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
             JSZip.loadAsync(response).then(function (zip: any) {
-                zip.file(/.dae/).forEach((obj: any)=>{
-                    return obj.async("text")
-                        .then((text: string)=>{
-                            callback(text);
-                        });
+                zip.file(/\.(jpg|jpeg|png)$/).forEach((zipobj: any) => {
+                    zipobj.async("uint8array").then( (arr: any) => {
+                        that.cloader.options.url_texture_map[zipobj.name] = arr;
+                    });
+                });
+                zip.file(/\.(dae)$/).forEach((zipobj: any)=>{
+                    zipobj.async("text").then((text: string)=>{
+                        that.loadText(text);
+                    });
                 });
             });
         });
     }
 
-    public loadFile = (file: string, method="get", callback=this.loadText) : void => {
+    public loadFile = (file: string, method="get") : void => {
         let that = this;
 
         ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
             let reader = new FileReader();
             reader.addEventListener("load", (data: any) => {
-                callback(data.target.result);
+                that.loadText(data.target.result);
             });
             reader.readAsText(response);
 
@@ -98,6 +102,7 @@ export class ColladaStream{
         this.loaded_obj.up = new THREE.Vector3(0, 0, 0);
         this.loaded_obj.scale.x = this.loaded_obj.scale.y = this.loaded_obj.scale.z = 150;
         this.loaded_obj.updateMatrix();
+        console.log(this.cloader.options.url_texture_map);
         this.onLoaded();
     }
 

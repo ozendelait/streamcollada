@@ -50,7 +50,8 @@ var CustomColladaLoader = function () {
         upAxis: 'Y',
 
         // For reflective or refractive materials we'll use this cubemap
-        defaultEnvMap: null
+        defaultEnvMap: null,
+        url_texture_map : {}
 
     };
 
@@ -5189,6 +5190,12 @@ var CustomColladaLoader = function () {
 
     function loadTextureImage ( texture, url ) {
         console.log("loadTextureImage: ", url);
+
+        texture.image = this.options.url_texture_map[this.url_texture_map[url]];
+        var isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0;
+        texture.format = isJPEG ? RGBFormat : RGBAFormat;
+        texture.needsUpdate = true;
+        /*
         var loader = new THREE.ImageLoader();
 
         loader.load( url, function ( image ) {
@@ -5197,7 +5204,7 @@ var CustomColladaLoader = function () {
             texture.needsUpdate = true;
 
         } );
-
+        */
     }
 
     function extractDoubleSided( obj, element ) {
