@@ -37,7 +37,7 @@ app.get("/", function (req, res) {
     res.render("index", data);
 }).post("/", function (req, res) {
     console.log("Post request");
-    res.sendFile("sphere.zip", options, function (err) {
+    res.sendFile("ball.zip", options, function (err) {
         console.log("sent file");
     });
 });

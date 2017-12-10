@@ -18,6 +18,14 @@ export class ColladaStream{
     protected obj : THREE.Object3D;
     protected loaded_obj : THREE.Object3D
 
+    public ajax_options = {
+        responseType : "blob",
+        headers : {
+            cache: false
+        }
+    }
+    public ajax_data : object = null;
+
     constructor(container: HTMLElement){
         this.container = container;
 
@@ -52,42 +60,37 @@ export class ColladaStream{
 
     public onLoaded = () : void => {}
 
-    public loadZip = (file: string, method="get") : void => {
+    public loadZip = (file: string, method="get", callback=this.loadText) : void => {
         let that = this;
 
-        ajax[method](file, null, {
-            responseType : "blob",
-            headers : {
-                cache: false
-            }
-        }).then((response: any)=>{
+        ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
             JSZip.loadAsync(response).then(function (zip: any) {
-                //console.log(zip);
                 zip.file(/.dae/).forEach((obj: any)=>{
                     return obj.async("text")
                         .then((text: string)=>{
-                            that.loadText(text);
+                            callback(text);
                         });
                 });
             });
         });
     }
 
+    public loadFile = (file: string, method="get", callback=this.loadText) : void => {
+        let that = this;
+
+        ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
+            let reader = new FileReader();
+            reader.addEventListener("load", (data: any) => {
+                callback(data.target.result);
+            });
+            reader.readAsText(response);
+
+        });
+    }
 
     public loadText = (content: string) : void => {
         let result = this.cloader.parse(content);
         this.loadColladaModel(result);
-    }
-
-    public loadFile = (file: string) : void => {
-        this.cloader.load(
-            file,   // resource URL
-            this.loadColladaModel,
-            (xhr: any) => {  // Function when resource is loaded
-                //let percent = xhr.loaded / xhr.total * 100;
-                //console.log(percent + '% loaded');
-            }
-        );
     }
 
     public loadColladaModel = (model: THREE.ColladaModel) : void => {
