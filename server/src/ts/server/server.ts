@@ -115,5 +115,5 @@ let ball_frames :Array<string> = fs.readdirSync(path.join(base_dir, "ball_frames
     return path.join("ball_frames_textured", el);
 }).sort();
 
-let dummyscene = new Scene(ball_frames, base_dir);
+let dummyscene = new Scene(["example.zip"], base_dir);
 dummyscene.zipAll();

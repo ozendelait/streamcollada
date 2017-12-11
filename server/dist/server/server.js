@@ -94,5 +94,5 @@ var ball_frames = fs.readdirSync(path.join(base_dir, "ball_frames_textured"))
 }).map(function (el) {
     return path.join("ball_frames_textured", el);
 }).sort();
-var dummyscene = new Scene(ball_frames, base_dir);
+var dummyscene = new Scene(["example.zip"], base_dir);
 dummyscene.zipAll();

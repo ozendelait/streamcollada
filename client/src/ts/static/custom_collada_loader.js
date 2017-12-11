@@ -5185,11 +5185,11 @@ var CustomColladaLoader = function () {
     function loadTextureImage ( texture, url ) {
         url = url.replace("undefined", "");
         var tex = options.url_texture_map[url];
+        console.log(options.url_texture_map, url, tex);
         texture.image = tex;
         var isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0;
         texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
         texture.needsUpdate = true;
-        console.log("texture: ", texture);
         /*
         var loader = new THREE.ImageLoader();
 
