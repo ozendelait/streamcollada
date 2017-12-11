@@ -22,3 +22,4 @@ let data = {
 app.get("/", (req, res) => {
     res.render("index", data);
 });
+//# sourceMappingURL=server.js.map

@@ -9,6 +9,6 @@ let stream = new CSTREAM.ColladaStream(document.body);
 stream.onLoaded = () : void =>{
     stream.removeLoaded();
     stream.addLoaded();
-    setTimeout(refresh, 100);
+    setTimeout(refresh, 10000);
 }
 refresh();

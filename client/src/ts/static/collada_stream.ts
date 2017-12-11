@@ -1,8 +1,7 @@
 import * as THREE from 'three';
-//import {OrbitControls} from "three-orbitcontrols-ts";
-const OrbitControls = require('three-orbit-controls')(THREE)
+const OrbitControls = require('three-orbit-controls')(THREE);
 //const ColladaLoader = require('three-collada-loader');
-import CustomColladaLoader = require("./custom_collada_loader");
+import TextureColladaLoader = require("./texture_collada_loader");
 const JSZip= require("jszip");
 const ajax = require("pajax");
 
@@ -32,7 +31,7 @@ export class ColladaStream{
 
         this.scene = new THREE.Scene();
 
-        this.cloader = new CustomColladaLoader();
+        this.cloader = TextureColladaLoader();
         this.cloader.options.convertUpAxis = true;
 
         this.renderer = new THREE.WebGLRenderer();
@@ -69,11 +68,20 @@ export class ColladaStream{
                 let zipped_textures = zip.file(/\.(jpg|jpeg|png)$/);
                 zipped_textures.forEach((zipobj: any) => {
                     zipobj.async("uint8array").then( (arr: any) => {
-                        that.cloader.options.url_texture_map[zipobj.name] = arr;
-                        counter++;
-                        if(counter == zipped_textures.length){
-                            callback();
-                        }
+                        let name = zipobj.name;
+                        let ext = name.substring(name.lastIndexOf('.')+1);
+                        let blob = new Blob([arr], {type: 'image/' + ext});
+
+
+                        var image = new Image();
+                        image.src = URL.createObjectURL(blob);
+                        image.onload = (event) => {
+                            that.cloader.options.url_texture_map[name] = image;
+                            counter++;
+                            if(counter == zipped_textures.length){
+                                callback();
+                            }
+                        };
                     });
                 });
                 if(zipped_textures.length == 0)
