@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import {OrbitControls} from "three-orbitcontrols-ts";
+//import {OrbitControls} from "three-orbitcontrols-ts";
+const OrbitControls = require('three-orbit-controls')(THREE)
 //const ColladaLoader = require('three-collada-loader');
 import CustomColladaLoader = require("./custom_collada_loader");
 const JSZip= require("jszip");
@@ -10,7 +11,7 @@ export class ColladaStream{
 
     protected scene: THREE.Scene;
     protected camera: THREE.Camera;
-    protected orbit: OrbitControls;
+    protected orbit: any;
     protected renderer: THREE.WebGLRenderer;
     protected cloader: any;
     protected container: HTMLElement;
@@ -19,7 +20,7 @@ export class ColladaStream{
     protected loaded_obj : THREE.Object3D
 
     public ajax_options = {
-        responseType : "arraybuffer", //"uint8array"
+        responseType : "blob", //"uint8array"
         headers : {
             cache: false
         }

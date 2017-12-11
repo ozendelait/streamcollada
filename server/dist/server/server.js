@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
 var path = require("path");
-var lessMiddleware = require("less-middleware");
 var fs = require("fs");
 var PATHS = require(path.join(process.cwd(), "config", "paths"));
 var JSZip = require("jszip");
@@ -95,7 +94,5 @@ var ball_frames = fs.readdirSync(path.join(base_dir, "ball_frames_textured"))
 }).map(function (el) {
     return path.join("ball_frames_textured", el);
 }).sort();
-console.log("FRAMES", ball_frames);
-var ball = ["color.zip"];
 var dummyscene = new Scene(ball_frames, base_dir);
 dummyscene.zipAll();

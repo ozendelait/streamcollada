@@ -1,7 +1,6 @@
 import * as express from "express";
 import * as path from "path";
 
-const lessMiddleware = require("less-middleware");
 const fs = require("fs");
 const PATHS = require( path.join(process.cwd(), "config", "paths") );
 const JSZip= require("jszip");
@@ -87,16 +86,6 @@ class Scene{
                         .on('finish', function () {
                             console.log("Zipped '" + _path + "'");
                         });
-                    /*zip.generateAsync({
-                        type: "arraybuffer"
-                    }).then(function(zipped:any){
-                        console.log(zipped)
-                        let arraybuffer = Uint8Array.from(zipped).buffer;
-                        let buffer = Buffer.from(arraybuffer);
-
-                        fs.writeFileSync(full_path_zip, buffer);
-                        console.log("Zipped '" + path_zip + "'");
-                     */
                     if(counter >= that.path_list.length){
                         callback();
                         return;
@@ -125,7 +114,6 @@ let ball_frames :Array<string> = fs.readdirSync(path.join(base_dir, "ball_frames
 }).map((el:string)=>{
     return path.join("ball_frames_textured", el);
 }).sort();
-console.log("FRAMES", ball_frames);
-let ball : Array<string> = ["color.zip"];
+
 let dummyscene = new Scene(ball_frames, base_dir);
 dummyscene.zipAll();

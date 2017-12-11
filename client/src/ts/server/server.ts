@@ -1,10 +1,6 @@
 import * as express from "express";
-//import * as bodyParser from "body-parser";
 import * as path from "path";
 
-//const formidable  = require("express-formidable");
-const lessMiddleware = require("less-middleware");
-//const multer = require("multer");
 const PATHS = require( path.join(process.cwd(), "config", "paths") );
 
 const DEBUG = true;
