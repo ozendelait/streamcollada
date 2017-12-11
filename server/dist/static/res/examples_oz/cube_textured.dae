@@ -33,7 +33,7 @@
   </library_cameras>
   <library_images>
     <image id="Untitled" name="Untitled">
-      <init_from>cube_textured.png</init_from>
+      <init_from>cube_textured.jpg</init_from>
     </image>
   </library_images>
   <library_effects>
