@@ -135,7 +135,6 @@ var CustomColladaLoader = function () {
             baseUrl = ( parts.length < 1 ? '.' : parts.join( '/' ) ) + '/';
 
         }
-        console.log("DEBUG 1");
 
         parseAsset();
         setUpConversion();
@@ -149,21 +148,18 @@ var CustomColladaLoader = function () {
         animations = parseLib( "library_animations animation", Animation, "animation" );
         visualScenes = parseLib( "library_visual_scenes visual_scene", VisualScene, "visual_scene" );
         kinematicsModels = parseLib( "library_kinematics_models kinematics_model", KinematicsModel, "kinematics_model" );
-        console.log("DEBUG 2");
 
         morphs = [];
         skins = [];
 
         visualScene = parseScene();
         scene = new THREE.Group();
-        console.log("DEBUG 3", visualScene);
 
         for ( var i = 0; i < visualScene.nodes.length; i ++ ) {
 
             scene.add( createSceneGraph( visualScene.nodes[ i ] ) );
 
         }
-        console.log("DEBUG 4");
 
         // unit conversion
         scene.scale.multiplyScalar( colladaUnit );
@@ -3680,8 +3676,6 @@ var CustomColladaLoader = function () {
                     var cot = this[ prop ];
 
                     if ( cot instanceof ColorOrTexture ) {
-
-                        console.log("is", cot);
                         if ( cot.isTexture() ) {
                             var samplerId = cot.texture;
                             var surfaceId = this.effect.sampler[samplerId];
@@ -5189,12 +5183,13 @@ var CustomColladaLoader = function () {
     }
 
     function loadTextureImage ( texture, url ) {
-        console.log("loadTextureImage: ", url);
-
-        texture.image = this.options.url_texture_map[this.url_texture_map[url]];
+        url = url.replace("undefined", "");
+        var tex = options.url_texture_map[url];
+        texture.image = tex;
         var isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0;
-        texture.format = isJPEG ? RGBFormat : RGBAFormat;
+        texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
         texture.needsUpdate = true;
+        console.log("texture: ", texture);
         /*
         var loader = new THREE.ImageLoader();
 

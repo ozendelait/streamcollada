@@ -19,7 +19,7 @@ export class ColladaStream{
     protected loaded_obj : THREE.Object3D
 
     public ajax_options = {
-        responseType : "blob",
+        responseType : "arraybuffer", //"uint8array"
         headers : {
             cache: false
         }
@@ -62,21 +62,42 @@ export class ColladaStream{
 
     public loadZip = (file: string, method="get") : void => {
         let that = this;
-
-        ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
-            JSZip.loadAsync(response).then(function (zip: any) {
-                zip.file(/\.(jpg|jpeg|png)$/).forEach((zipobj: any) => {
+        function unzip(zip: any){
+            function unzipTextures(zip: any, callback: any){
+                let counter = 0;
+                let zipped_textures = zip.file(/\.(jpg|jpeg|png)$/);
+                zipped_textures.forEach((zipobj: any) => {
                     zipobj.async("uint8array").then( (arr: any) => {
                         that.cloader.options.url_texture_map[zipobj.name] = arr;
+                        counter++;
+                        if(counter == zipped_textures.length){
+                            callback();
+                        }
                     });
                 });
+                if(zipped_textures.length == 0)
+                    callback()
+            }
+            function unzipColladas(zip: any){
                 zip.file(/\.(dae)$/).forEach((zipobj: any)=>{
                     zipobj.async("text").then((text: string)=>{
                         that.loadText(text);
                     });
                 });
+            }
+
+            unzipTextures(zip, ()=>{
+                unzipColladas(zip);
             });
-        });
+        }
+
+        ajax[method](file, that.ajax_data, that.ajax_options).then(
+            (response: any) => {
+                JSZip.loadAsync(response).then(unzip)
+            }, (response: any) => {
+                console.log("Error: ", response);
+            }
+        );
     }
 
     public loadFile = (file: string, method="get") : void => {
@@ -102,7 +123,6 @@ export class ColladaStream{
         this.loaded_obj.up = new THREE.Vector3(0, 0, 0);
         this.loaded_obj.scale.x = this.loaded_obj.scale.y = this.loaded_obj.scale.z = 150;
         this.loaded_obj.updateMatrix();
-        console.log(this.cloader.options.url_texture_map);
         this.onLoaded();
     }
 

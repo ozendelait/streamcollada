@@ -1,8 +1,9 @@
 # Node
-node_modules/*
-client/dist/definitions/*
-client/dist/static/css/*
-client/dist/static/js/*
+**/node_modules/**
+**/definitions/**
+**/static/css/**/*.css
+**/static/js/**/*.js
+**/res/**/*.zip
 
 #IDE
 .idea/
