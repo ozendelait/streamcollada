@@ -3706,7 +3706,6 @@ var CustomColladaLoader = function () {
                                             loadTextureImage( texture, url );
 
                                         }
-
                                         texture.wrapS = cot.texOpts.wrapU ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
                                         texture.wrapT = cot.texOpts.wrapV ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
                                         texture.offset.x = cot.texOpts.offsetU;
@@ -5184,22 +5183,8 @@ var CustomColladaLoader = function () {
 
     function loadTextureImage ( texture, url ) {
         url = url.replace("undefined", "");
-        var tex = options.url_texture_map[url];
-        console.log(options.url_texture_map, url, tex);
-        texture.image = tex;
-        var isJPEG = url.search( /\.(jpg|jpeg)$/ ) > 0;
-        texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat;
+        texture.image = options.url_texture_map[url];
         texture.needsUpdate = true;
-        /*
-        var loader = new THREE.ImageLoader();
-
-        loader.load( url, function ( image ) {
-
-            texture.image = image;
-            texture.needsUpdate = true;
-
-        } );
-        */
     }
 
     function extractDoubleSided( obj, element ) {
