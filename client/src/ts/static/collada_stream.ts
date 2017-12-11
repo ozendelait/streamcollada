@@ -1,8 +1,7 @@
 import * as THREE from 'three';
-//import {OrbitControls} from "three-orbitcontrols-ts";
 const OrbitControls = require('three-orbit-controls')(THREE);
 //const ColladaLoader = require('three-collada-loader');
-import CustomColladaLoader = require("./custom_collada_loader");
+import TextureColladaLoader = require("./texture_collada_loader");
 const JSZip= require("jszip");
 const ajax = require("pajax");
 
@@ -32,7 +31,7 @@ export class ColladaStream{
 
         this.scene = new THREE.Scene();
 
-        this.cloader = new CustomColladaLoader();
+        this.cloader = TextureColladaLoader();
         this.cloader.options.convertUpAxis = true;
 
         this.renderer = new THREE.WebGLRenderer();

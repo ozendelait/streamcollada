@@ -5,7 +5,7 @@ var THREE = require( 'three' );
  * @author Tony Parisi / http://www.tonyparisi.com/
  */
 
-var CustomColladaLoader = function () {
+var TextureColladaLoader = function () {
 
     var COLLADA = null;
     var scene = null;
@@ -5491,4 +5491,4 @@ var CustomColladaLoader = function () {
 
 };
 
-module.exports = CustomColladaLoader;
+module.exports = TextureColladaLoader;

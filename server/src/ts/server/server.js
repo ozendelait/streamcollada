@@ -93,3 +93,4 @@ let ball_frames = fs.readdirSync(path.join(base_dir, "ball_frames_textured"))
 }).sort();
 let dummyscene = new Scene(["example.zip"], base_dir);
 dummyscene.zipAll();
+//# sourceMappingURL=server.js.map
