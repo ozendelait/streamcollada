@@ -4,6 +4,7 @@
 **/static/css/**/*.css
 **/static/js/**/*.js
 **/res/**/*.zip
+**/static/**/*.map
 
 #IDE
 .idea/

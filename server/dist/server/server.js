@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const path = require("path");
+const testscene = require("./test_scene");
 const fs = require("fs");
 const PATHS = require(path.join(process.cwd(), "config", "paths"));
-const JSZip = require("jszip");
 const DEBUG = true;
 const PORT = 7070;
 let app = express();
@@ -26,7 +26,7 @@ app.all('/', function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "X-Requested-With, Cache-Control");
     next();
 });
-let options = {
+let res_options = {
     root: PATHS.RES_DIR,
     headers: {
         "connection": "keep-alive",
@@ -36,60 +36,23 @@ let options = {
 app.get("/", (req, res) => {
     res.render("index", data);
 }).post("/", (req, res) => {
-    console.log("Post request");
     let next = dummyscene.getNext();
-    res.sendFile(next, options, (err) => {
+    res.sendFile(next, res_options, (err) => {
         console.log("sent '" + next + "'");
     });
 });
-class Scene {
-    constructor(path_list, base_dir = "") {
-        this.path_list = path_list;
-        this.base_dir = base_dir;
-        this.counter = 0;
-    }
-    replaceExtWithZip(str) {
-        return (str.substr(0, str.lastIndexOf('.')) || str) + ".zip";
-    }
-    zipAll(callback = () => { }) {
-        let that = this;
-        let counter = 0;
-        this.path_list.forEach((_path) => {
-            if (_path.substr(-(".zip".length)) !== ".zip") {
-                let path_zip = that.replaceExtWithZip(_path);
-                let full_path_zip = path.join(that.base_dir, path_zip);
-                if (!fs.existsSync(full_path_zip)) {
-                    let zip = new JSZip();
-                    let full_path = path.join(that.base_dir, _path);
-                    zip.file(_path, fs.readFileSync(full_path));
-                    zip.generateNodeStream({ type: 'nodebuffer', streamFiles: false })
-                        .pipe(fs.createWriteStream(full_path_zip))
-                        .on('finish', function () {
-                        console.log("Zipped '" + _path + "'");
-                    });
-                    if (counter >= that.path_list.length) {
-                        callback();
-                        return;
-                    }
-                    counter++;
-                }
-            }
-        });
-        callback();
-    }
-    getNext() {
-        this.counter++;
-        if (this.counter >= this.path_list.length)
-            this.counter = 0;
-        return this.replaceExtWithZip(this.path_list[this.counter]);
-    }
-}
 let base_dir = path.join(PATHS.RES_DIR);
-let ball_frames = fs.readdirSync(path.join(base_dir, "ball_frames_textured"))
+let subfolder = "ball_textured";
+let frame_list = fs.readdirSync(path.join(base_dir, subfolder))
     .filter((el) => {
     return (el.substr(-(".zip".length)) === ".dae");
 }).map((el) => {
-    return path.join("ball_frames_textured", el);
+    return path.join(subfolder, el);
 }).sort();
-let dummyscene = new Scene(["example.zip"], base_dir);
+let static_list = ["texture_1.jpg", "texture_2.jpg"]
+    .map((el) => {
+    return path.join(subfolder, el);
+});
+let scene_options = new testscene.SceneOptions(base_dir, static_list);
+let dummyscene = new testscene.Scene(frame_list, scene_options);
 dummyscene.zipAll();

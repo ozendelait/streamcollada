@@ -5182,7 +5182,7 @@ var TextureColladaLoader = function () {
     }
 
     function loadTextureImage ( texture, url ) {
-        url = url.replace("undefined", "");
+        url = url.replace("undefined", "").split('/').pop();
         texture.image = options.url_texture_map[url];
         texture.needsUpdate = true;
     }

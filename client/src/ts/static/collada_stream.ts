@@ -68,7 +68,16 @@ export class ColladaStream{
                 let zipped_textures = zip.file(/\.(jpg|jpeg|png)$/);
                 zipped_textures.forEach((zipobj: any) => {
                     zipobj.async("uint8array").then( (arr: any) => {
-                        let name = zipobj.name;
+                        let name = zipobj.name.split('/').pop();
+
+                        // "Cache"
+                        if(that.cloader.options.url_texture_map.hasOwnProperty(name)){
+                            counter++;
+                            if(counter == zipped_textures.length){
+                                callback();
+                            }
+                            return;
+                        }
                         let ext = name.substring(name.lastIndexOf('.')+1);
                         let blob = new Blob([arr], {type: 'image/' + ext});
 
