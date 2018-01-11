@@ -15,8 +15,8 @@ export class ColladaStream{
     protected cloader: any;
     protected container: HTMLElement;
 
-    protected obj : THREE.Object3D;
-    protected loaded_obj : THREE.Object3D
+    protected loaded_scene : THREE.Scene;
+    protected current_scene : THREE.Scene;
 
     public ajax_options = {
         responseType : "blob", //"uint8array"
@@ -137,25 +137,26 @@ export class ColladaStream{
     }
 
     public loadColladaModel = (model: THREE.ColladaModel) : void => {
-        this.loaded_obj = model.scene;
-        this.loaded_obj.up = new THREE.Vector3(0, 0, 0);
-        this.loaded_obj.scale.x = this.loaded_obj.scale.y = this.loaded_obj.scale.z = 150;
-        this.loaded_obj.updateMatrix();
+        this.loaded_scene = model.scene;
+        this.loaded_scene.up = new THREE.Vector3(0, 0, 0);
+        this.loaded_scene.scale.x = this.loaded_scene.scale.y = this.loaded_scene.scale.z = 150;
+        this.loaded_scene.updateMatrix();
         this.onLoaded();
     }
 
     public addLoaded = () : void => {
-        this.obj = this.loaded_obj;
-        this.scene.add(this.obj);
+        this.current_scene = this.loaded_scene;
+        this.scene.add(this.loaded_scene);
     }
-    public removeLoaded = () : void =>{
-        if(this.obj)
-            this.scene.remove(this.obj);
+
+    public removeCurrent = () : void => {
+        this.removeThreeObject(this.current_scene);
+        this.current_scene = undefined;
     }
 
     public clearScene = () : void =>{
         while(this.scene.children.length > 0){
-            this.scene.remove(this.scene.children[0]);
+            this.removeThreeObject(this.scene.children[0]);
         }
     }
 
@@ -171,6 +172,41 @@ export class ColladaStream{
         // A different way to specify the position:
         directionalLight2.position.set(-1, 0, 1);
         this.scene.add( directionalLight2 );
+    }
+
+
+    protected removeThreeObject = (obj : THREE.Object3D, parent?: THREE.Object3D | THREE.Scene) : void => {
+        if(obj){
+            if(obj.children){
+                while(obj.children.length > 0){
+                    this.removeThreeObject(obj.children[0], obj);
+                }
+            }
+            if(obj.geometry){
+                obj.geometry.dispose();
+                obj.geometry = undefined;
+            }
+            if(obj.mesh){
+                obj.mesh.dispose();
+                obj.mesh = undefined;
+            }
+            if(obj.material){
+                if(obj.material.map){
+                    obj.material.map.dispose();
+                    obj.material.map = undefined
+                }
+                obj.material.dispose();
+                obj.material = undefined;
+            }
+            if(obj.texture){
+                obj.texture.dispose();
+                obj.texture = undefined;
+            }
+            (parent || this.scene).remove(obj);
+            if(obj.dispose)
+                obj.dispose();
+            obj = undefined;
+        }
     }
 
     protected render = () : void => {

@@ -1,8 +1,7 @@
 import CSTREAM = require("./collada_stream");
 
 
-const REFRESH_MS = 500;
-
+const REFRESH_MS = 300;
 
 function refresh(){
     stream.loadZip("http://localhost:7070/", "post");
@@ -10,7 +9,7 @@ function refresh(){
 
 let stream = new CSTREAM.ColladaStream(document.body);
 stream.onLoaded = () : void =>{
-    stream.removeLoaded();
+    stream.removeCurrent();
     stream.addLoaded();
     setTimeout(refresh, REFRESH_MS);
 }
