@@ -1,6 +1,6 @@
 import TextureColladaLoader = require("./texture_collada_loader");
+import TextureObjLoader = require("./texture_obj_loader");
 import SceneStream = require("./scene_stream");
-import {OBJLoader2} from "three";
 const ajax = require("pajax");
 const JSZip= require("jszip");
 
@@ -144,7 +144,7 @@ export class ObjStreamLoader extends BaseStreamLoader{
 
     constructor(stream : SceneStream.ISceneStream){
         super(stream);
-        this.objloader = OBJLoader2();
+        this.objloader = new TextureObjLoader();
         this.MODEL_EXT = /\.(obj|mtl)$/;
         this.texture_map = {};
     }
