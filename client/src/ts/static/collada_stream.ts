@@ -1,38 +1,27 @@
 import * as THREE from 'three';
 const OrbitControls = require('three-orbit-controls')(THREE);
-//const ColladaLoader = require('three-collada-loader');
-import TextureColladaLoader = require("./texture_collada_loader");
-const JSZip= require("jszip");
-const ajax = require("pajax");
 
 
-export class ColladaStream{
+export interface ISceneStream{
+    load(scene: THREE.Object3D) : void;
+}
+
+export class SceneStream implements ISceneStream{
 
     protected scene: THREE.Scene;
     protected camera: THREE.Camera;
     protected orbit: any;
     protected renderer: THREE.WebGLRenderer;
-    protected cloader: any;
     protected container: HTMLElement;
 
     protected loaded_scene : THREE.Scene;
     protected current_scene : THREE.Scene;
 
-    public ajax_options = {
-        responseType : "blob", //"uint8array"
-        headers : {
-            cache: false
-        }
-    }
-    public ajax_data : object = null;
 
     constructor(container: HTMLElement){
         this.container = container;
 
         this.scene = new THREE.Scene();
-
-        this.cloader = TextureColladaLoader();
-        this.cloader.options.convertUpAxis = true;
 
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
@@ -60,84 +49,8 @@ export class ColladaStream{
 
     public onLoaded = () : void => {}
 
-    public loadZip = (file: string, method="get") : void => {
-        let that = this;
-        function unzip(zip: any){
-            function unzipTextures(zip: any, callback: any){
-                let counter = 0;
-                let zipped_textures = zip.file(/\.(jpg|jpeg|png)$/);
-                zipped_textures.forEach((zipobj: any) => {
-                    zipobj.async("uint8array").then( (arr: any) => {
-                        let name = zipobj.name.split('/').pop();
-
-                        // "Cache"
-                        if(that.cloader.options.url_texture_map.hasOwnProperty(name)){
-                            counter++;
-                            if(counter == zipped_textures.length){
-                                callback();
-                            }
-                            return;
-                        }
-                        let ext = name.substring(name.lastIndexOf('.')+1);
-                        let blob = new Blob([arr], {type: 'image/' + ext});
-
-
-                        var image = new Image();
-                        image.src = URL.createObjectURL(blob);
-                        image.onload = (event) => {
-                            that.cloader.options.url_texture_map[name] = image;
-                            counter++;
-                            if(counter == zipped_textures.length){
-                                callback();
-                            }
-                        };
-                    });
-                });
-                if(zipped_textures.length == 0)
-                    callback()
-            }
-            function unzipColladas(zip: any){
-                zip.file(/\.(dae)$/).forEach((zipobj: any)=>{
-                    zipobj.async("text").then((text: string)=>{
-                        that.loadText(text);
-                    });
-                });
-            }
-
-            unzipTextures(zip, ()=>{
-                unzipColladas(zip);
-            });
-        }
-
-        ajax[method](file, that.ajax_data, that.ajax_options).then(
-            (response: any) => {
-                JSZip.loadAsync(response).then(unzip)
-            }, (response: any) => {
-                console.log("Error: ", response);
-            }
-        );
-    }
-
-    public loadFile = (file: string, method="get") : void => {
-        let that = this;
-
-        ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
-            let reader = new FileReader();
-            reader.addEventListener("load", (data: any) => {
-                that.loadText(data.target.result);
-            });
-            reader.readAsText(response);
-
-        });
-    }
-
-    public loadText = (content: string) : void => {
-        let result = this.cloader.parse(content);
-        this.loadColladaModel(result);
-    }
-
-    public loadColladaModel = (model: THREE.ColladaModel) : void => {
-        this.loaded_scene = model.scene;
+    public load = (scene : THREE.Scene) : void => {
+        this.loaded_scene = scene;
         this.loaded_scene.up = new THREE.Vector3(0, 0, 0);
         this.loaded_scene.scale.x = this.loaded_scene.scale.y = this.loaded_scene.scale.z = 150;
         this.loaded_scene.updateMatrix();
