@@ -1,17 +1,20 @@
-import CSTREAM = require("./collada_stream");
+import SceneStream = require("./scene_stream");
+import StreamLoader = require("./stream_loader");
 
-
-const REFRESH_MS = 500;
-
+const REFRESH_MS = 300;
 
 function refresh(){
-    stream.loadZip("http://localhost:7070/", "post");
+    collada_loader.loadZip("http://localhost:7070/", "post");
 }
 
-let stream = new CSTREAM.ColladaStream(document.body);
+let stream = new SceneStream.SceneStream(document.body);
+let collada_loader = new StreamLoader.ColladaStreamLoader(stream);
+let obj_loader = new StreamLoader.ObjStreamLoader(stream);
+
 stream.onLoaded = () : void =>{
-    stream.removeLoaded();
+    stream.removeCurrent();
     stream.addLoaded();
     setTimeout(refresh, REFRESH_MS);
 }
+
 refresh();

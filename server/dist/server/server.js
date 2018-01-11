@@ -45,7 +45,7 @@ let base_dir = path.join(PATHS.RES_DIR);
 let subfolder = "ball_textured";
 let frame_list = fs.readdirSync(path.join(base_dir, subfolder))
     .filter((el) => {
-    return (el.substr(-(".zip".length)) === ".dae");
+    return (el.substr(-(".dae".length)) === ".dae");
 }).map((el) => {
     return path.join(subfolder, el);
 }).sort();

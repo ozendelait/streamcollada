@@ -55,12 +55,13 @@ app.get("/", (req:any, res:any) => {
 });
 
 
+
 let base_dir = path.join(PATHS.RES_DIR);
 let subfolder = "ball_textured";
 
 let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
     .filter((el:string)=>{
-        return (el.substr(-(".zip".length)) === ".dae");
+        return (el.substr(-(".dae".length)) === ".dae");
     }).map((el:string)=>{
         return path.join(subfolder , el);
     }).sort();
@@ -69,6 +70,23 @@ let static_list: Array<string> = ["texture_1.jpg", "texture_2.jpg"]
     .map((el:string)=>{
         return path.join(subfolder , el);
     });
+
+/*
+let base_dir = path.join(PATHS.RES_DIR);
+let subfolder = "ball_obj";
+
+let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
+    .filter((el:string)=>{
+        return (el.substr(-(".mtl".length)) === ".mtl");
+    }).map((el:string)=>{
+        return path.join(subfolder , el);
+    }).sort();
+
+let static_list: Array<string> = ["SoilBeach0087_11_S.jpg", "sor_tischdecke_720x480.jpg"]
+    .map((el:string)=>{
+        return path.join(subfolder , el);
+    });
+*/
 
 let scene_options = new testscene.SceneOptions(base_dir, static_list);
 let dummyscene = new testscene.Scene(frame_list, scene_options);
