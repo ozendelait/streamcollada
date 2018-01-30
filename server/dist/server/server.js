@@ -40,6 +40,11 @@ app.get("/", (req, res) => {
     res.sendFile(next, res_options, (err) => {
         console.log("sent '" + next + "'");
     });
+}).post("/collada_path", (req, res) => {
+    let next = collada_path_scene.getNext();
+    res.sendFile(next, res_options, (err) => {
+        console.log("sent '" + next + "'");
+    });
 }).post("/obj", (req, res) => {
     let next = obj_scene.getNext();
     res.sendFile(next, res_options, (err) => {
@@ -78,6 +83,24 @@ let collada_scene = (function () {
     });
     let scene_options = new testscene.SceneOptions(base_dir, static_list);
     let scene = new testscene.Scene(grouped_frame_list, scene_options);
+    scene.zipAll();
+    return scene;
+})();
+let collada_path_scene = (function () {
+    let base_dir = path.join(PATHS.RES_DIR);
+    let subfolder = "ball_path";
+    let frame_list = fs.readdirSync(path.join(base_dir, subfolder))
+        .filter((el) => {
+        return (el.substr(-(".dae".length)) === ".dae");
+    }).map((el) => {
+        return [path.join(subfolder, el)];
+    });
+    let static_list = ["texture_2.jpg"]
+        .map((el) => {
+        return path.join(subfolder, el);
+    });
+    let scene_options = new testscene.SceneOptions(base_dir, static_list);
+    let scene = new testscene.Scene(frame_list, scene_options);
     scene.zipAll();
     return scene;
 })();

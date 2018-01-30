@@ -6,6 +6,8 @@ export interface ISceneStream{
     load(scene: THREE.Object3D) : void;
 }
 
+export type ColladaObjects = THREE.Scene | THREE.ColladaModel | THREE.Object3D | THREE.Group;
+
 export class SceneStream implements ISceneStream{
 
     protected scene: THREE.Scene;
@@ -14,8 +16,8 @@ export class SceneStream implements ISceneStream{
     protected renderer: THREE.WebGLRenderer;
     protected container: HTMLElement;
 
-    protected loaded_scene : THREE.Scene;
-    protected current_scene : THREE.Scene;
+    protected loaded_scene : ColladaObjects;
+    protected current_scene : ColladaObjects;
 
 
     constructor(container: HTMLElement){
@@ -49,7 +51,7 @@ export class SceneStream implements ISceneStream{
 
     public onLoaded() : void{}
 
-    public load(scene : THREE.Scene) : void{
+    public load(scene : ColladaObjects) : void{
         this.loaded_scene = scene;
         this.loaded_scene.up = new THREE.Vector3(0, 0, 0);
         this.loaded_scene.scale.x = this.loaded_scene.scale.y = this.loaded_scene.scale.z = 150;

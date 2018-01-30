@@ -1,13 +1,18 @@
-import {ISceneStream} from "./scene_stream";
+import {ISceneStream, ColladaObjects} from "./scene_stream";
 const ajax = require("pajax");
 const JSZip= require("jszip");
 
 
 export interface IStreamLoader{
-    loadZip(file: string, method: string) : void;
+    stream: ISceneStream;
+    MODEL_EXT: RegExp;
+
+    loadZipFile(file: string, method: string) : void;
+    loadZip(zip: any) : void;
+    loadZipModel(zip: any) : void;
     loadFile(file: string, method: string) : void;
-    loadText(content: string) : void;
-    loadModel(model: THREE.Object3D) : void;
+    loadModelString(content: string) : void;
+    loadModelObject(model: THREE.Object3D) : void;
 }
 
 export abstract class BaseStreamLoader implements IStreamLoader{
@@ -15,26 +20,59 @@ export abstract class BaseStreamLoader implements IStreamLoader{
     public ajax_options: object;
     public ajax_data : object;
     public TEXTURE_EXT: RegExp;
-    protected MODEL_EXT: RegExp;
+    public MODEL_EXT: RegExp;
+    static AXAJ_OPTIONS = {
+        responseType : "blob", //"uint8array"
+        headers : {
+            cache: false
+        }
+    };
+    static STREAM_LOADERS: Array<IStreamLoader> = [];
+
+    static getStreamLoaderFromFile(stream: ISceneStream, file: string): IStreamLoader|null{
+        let stream_loader: BaseStreamLoader = null;
+        BaseStreamLoader.STREAM_LOADERS.forEach((sloader: any)=>{
+            if(file.match(sloader.MODEL_EXT).index > 0){
+                stream_loader = new sloader(stream);
+            }
+        });
+        return stream_loader;
+    }
+    static getStreamLoaderFromZipFile(stream: ISceneStream, file: string, method: string, done_cb:any): void{
+        let that = this;
+        ajax[method](file, null, BaseStreamLoader.AXAJ_OPTIONS).then(
+            (response: any) => {
+                JSZip.loadAsync(response).then((zip: any)=>{
+                    done_cb(BaseStreamLoader.getStreamLoaderFromZip(stream, zip));
+                })
+            }, (response: any) => {
+                console.log("Error: ", response);
+            }
+        );
+    }
+    static getStreamLoaderFromZip(stream: ISceneStream, zip: any): IStreamLoader|null{
+        let stream_loader: BaseStreamLoader = null;
+        BaseStreamLoader.STREAM_LOADERS.forEach((sloader: any)=>{
+            if(zip.file(sloader.MODEL_EXT).length > 0){
+                stream_loader = new sloader(stream);
+            }
+        });
+        return stream_loader;
+    }
 
     constructor(stream : ISceneStream){
         this.stream =  stream;
-        this.ajax_options = {
-            responseType : "blob", //"uint8array"
-            headers : {
-                cache: false
-            }
-        }
+        this.ajax_options = BaseStreamLoader.AXAJ_OPTIONS;
         this.ajax_data = null;
         this.TEXTURE_EXT = /\.(jpg|jpeg|png)$/;
         this.MODEL_EXT = /\.$/;
     }
 
-    public loadZip(file: string, method: string){
+    public loadZipFile(file: string, method: string){
         let that = this;
         ajax[method](file, this.ajax_data, this.ajax_options).then(
             (response: any) => {
-                JSZip.loadAsync(response).then((zip: any)=>{that.unzip(zip)})
+                JSZip.loadAsync(response).then((zip: any)=>{that.loadZip(zip)})
             }, (response: any) => {
                 console.log("Error: ", response);
             }
@@ -45,23 +83,23 @@ export abstract class BaseStreamLoader implements IStreamLoader{
         ajax[method](file, that.ajax_data, that.ajax_options).then((response: any) => {
             let reader = new FileReader();
             reader.addEventListener("load", (data: any) => {
-                that.loadText(data.target.result);
+                that.loadModelString(data.target.result);
             });
             reader.readAsText(response);
 
         });
     }
-    public loadModel(model: THREE.Object3D){
+    public loadModelObject(model: ColladaObjects){
         this.stream.load(model);
     }
-    public abstract loadText(content: string) : void;
+    public abstract loadModelString(content: string) : void;
 
 
-    protected onUnzipLoadTexture(name: string, image: any, callback: any){
+    public loadTextureImage(name: string, image: any, callback: any){
         if(callback !== null)
             callback();
     }
-    protected onUnzipTexture(name: string, arr: Uint8Array, callback: any){
+    public loadTextureBuffer(name: string, arr: Uint8Array, callback: any){
         let that = this;
 
         let ext = name.substring(name.lastIndexOf('.')+1);
@@ -70,13 +108,10 @@ export abstract class BaseStreamLoader implements IStreamLoader{
         let image = new Image();
         image.src = URL.createObjectURL(blob);
         image.onload = (event) => {
-            that.onUnzipLoadTexture(name, image, callback)
+            that.loadTextureImage(name, image, callback)
         };
     }
-    protected onUnzipModel(model: string){
-        this.loadText(model);
-    }
-    protected unzipTextures(zip: any, callback: any){
+    public loadZipTextures(zip: any, callback: any){
         let that = this;
         let counter = 0;
         let cb;
@@ -85,26 +120,24 @@ export abstract class BaseStreamLoader implements IStreamLoader{
             zipobj.async("uint8array").then( (arr: any) => {
                 counter++;
                 cb = ((counter == zipped_textures.length) ? callback : null);
-                that.onUnzipTexture(zipobj.name, arr, cb);
+                that.loadTextureBuffer(zipobj.name, arr, cb);
             });
         });
-        if(zipped_textures.length == 0)
+        if(zipped_textures.length == 0 && callback)
             callback()
     }
-    protected unzipModel(zip: any){
+    public loadZipModel(zip: any){
         let that = this;
         zip.file(this.MODEL_EXT).forEach((zipobj: any)=>{
             zipobj.async("text").then((text: string)=>{
-                that.onUnzipModel(text);
+                that.loadModelString(text);
             });
         });
     }
-    protected unzip(zip: any){
+    public loadZip(zip: any){
         let that = this;
-        this.unzipTextures(zip, ()=>{
-            that.unzipModel(zip);
+        this.loadZipTextures(zip, ()=>{
+            that.loadZipModel(zip);
         });
     }
 }
-
-
