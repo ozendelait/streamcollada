@@ -56,7 +56,7 @@ function groupElementsByNumber(ar) {
         number_map[numbers].push(el);
     });
     let keys = Object.keys(number_map);
-    keys.sort();
+    keys.sort((a, b) => { return parseInt(a) - parseInt(b); });
     keys.forEach((el) => {
         grouped_array.push(number_map[el]);
     });
