@@ -1,5 +1,5 @@
 # Node
-**/node_modules/**
+**/node_modules/
 **/definitions/**
 **/static/css/**/*.css
 **/static/js/**/*.js

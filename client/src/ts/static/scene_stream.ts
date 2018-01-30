@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 const OrbitControls = require('three-orbit-controls')(THREE);
 
 
@@ -47,9 +47,9 @@ export class SceneStream implements ISceneStream{
         this.render();
     }
 
-    public onLoaded = () : void => {}
+    public onLoaded() : void{}
 
-    public load = (scene : THREE.Scene) : void => {
+    public load(scene : THREE.Scene) : void{
         this.loaded_scene = scene;
         this.loaded_scene.up = new THREE.Vector3(0, 0, 0);
         this.loaded_scene.scale.x = this.loaded_scene.scale.y = this.loaded_scene.scale.z = 150;
@@ -57,23 +57,23 @@ export class SceneStream implements ISceneStream{
         this.onLoaded();
     }
 
-    public addLoaded = () : void => {
+    public addLoaded() : void{
         this.current_scene = this.loaded_scene;
         this.scene.add(this.loaded_scene);
     }
 
-    public removeCurrent = () : void => {
+    public removeCurrent() : void{
         this.removeThreeObject(this.current_scene);
         this.current_scene = undefined;
     }
 
-    public clearScene = () : void =>{
+    public clearScene() : void{
         while(this.scene.children.length > 0){
             this.removeThreeObject(this.scene.children[0]);
         }
     }
 
-    public addLights = () : void => {
+    public addLights() : void{
         // Add some lights to the scene
         let directionalLight = new THREE.DirectionalLight(0xeeeeee , 1.0);
         directionalLight.position.x = 1;
@@ -88,7 +88,7 @@ export class SceneStream implements ISceneStream{
     }
 
 
-    protected removeThreeObject = (obj : THREE.Object3D, parent?: THREE.Object3D | THREE.Scene) : void => {
+    protected removeThreeObject(obj : THREE.Object3D, parent?: THREE.Object3D | THREE.Scene) : void{
         if(obj){
             if(obj.children){
                 while(obj.children.length > 0){
@@ -122,10 +122,10 @@ export class SceneStream implements ISceneStream{
         }
     }
 
-    protected render = () : void => {
+    protected render() : void{
         this.orbit.update();
         this.renderer.render(this.scene, this.camera);
 
-        requestAnimationFrame(this.render);
+        requestAnimationFrame(()=>{this.render()});
     }
 }

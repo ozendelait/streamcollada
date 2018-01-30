@@ -33,8 +33,8 @@
     "nodejs": "0.0.0",
     "pajax": "^5.0.3",
     "three": "^0.86.0",
+    "three-obj-loader": "^1.1.3",
     "three-orbit-controls": "^82.1.0",
-    "three-orbitcontrols-ts": "^0.1.2",
     "tsc": "^1.20150623.0"
   },
   "devDependencies": {
@@ -44,7 +44,6 @@
     "gulp-browserify": "^0.5.1",
     "gulp-rename": "^1.2.2",
     "gulp-typescript": "^3.2.3",
-    "three-collada-loader": "0.0.1",
     "typescript": "^2.6.2"
   }
 }

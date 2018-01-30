@@ -45,49 +45,85 @@ let res_options = {
     }
 };
 
+
 app.get("/", (req:any, res:any) => {
     res.render("index", data);
-}).post("/", (req:any, res:any) => {
-    let next = dummyscene.getNext();
+}).post("/collada", (req:any, res:any) => {
+    let next = collada_scene.getNext();
+    res.sendFile(next, res_options, (err:any)=>{
+        console.log("sent '" + next + "'");
+    })
+}).post("/obj", (req:any, res:any) => {
+    let next = obj_scene.getNext();
     res.sendFile(next, res_options, (err:any)=>{
         console.log("sent '" + next + "'");
     })
 });
 
 
+function groupElementsByNumber(ar: Array<string>):Array<Array<string>>{
+    let grouped_array: Array<Array<string>> = [];
+    let number_map: {[key:string]:Array<string>} = {};
 
-let base_dir = path.join(PATHS.RES_DIR);
-let subfolder = "ball_textured";
-
-let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
-    .filter((el:string)=>{
-        return (el.substr(-(".dae".length)) === ".dae");
-    }).map((el:string)=>{
-        return path.join(subfolder , el);
-    }).sort();
-
-let static_list: Array<string> = ["texture_1.jpg", "texture_2.jpg"]
-    .map((el:string)=>{
-        return path.join(subfolder , el);
+    ar.forEach((el:string)=>{
+        let numbers: string = String(parseInt(el.replace( /^\D+/g, '')));
+        if(!number_map.hasOwnProperty(numbers))
+            number_map[numbers] = [];
+        number_map[numbers].push(el);
+    });
+    let keys = Object.keys(number_map);
+    keys.sort()
+    keys.forEach((el: string)=>{
+        grouped_array.push(number_map[el]);
     });
 
-/*
-let base_dir = path.join(PATHS.RES_DIR);
-let subfolder = "ball_obj";
+    return grouped_array;
+}
 
-let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
-    .filter((el:string)=>{
-        return (el.substr(-(".mtl".length)) === ".mtl");
-    }).map((el:string)=>{
-        return path.join(subfolder , el);
-    }).sort();
+let collada_scene = (function(){
+    let base_dir = path.join(PATHS.RES_DIR);
+    let subfolder = "ball_textured";
 
-let static_list: Array<string> = ["SoilBeach0087_11_S.jpg", "sor_tischdecke_720x480.jpg"]
-    .map((el:string)=>{
-        return path.join(subfolder , el);
-    });
-*/
+    let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
+        .filter((el:string)=>{
+            return (el.substr(-(".dae".length)) === ".dae");
+        }).map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+    let grouped_frame_list: Array<Array<string>> = groupElementsByNumber(frame_list);
 
-let scene_options = new testscene.SceneOptions(base_dir, static_list);
-let dummyscene = new testscene.Scene(frame_list, scene_options);
-dummyscene.zipAll();
+    let static_list: Array<string> = ["texture_1.jpg", "texture_2.jpg"]
+        .map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+
+    let scene_options = new testscene.SceneOptions(base_dir, static_list);
+    let scene = new testscene.Scene(grouped_frame_list, scene_options);
+    scene.zipAll();
+
+    return scene;
+})();
+
+let obj_scene = (function(){
+    let base_dir = path.join(PATHS.RES_DIR);
+    let subfolder = "ball_obj";
+
+    let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
+        .filter((el:string)=>{
+            return (el.substr(-(".obj".length)) === ".obj") || (el.substr(-(".mtl".length)) === ".mtl");
+        }).map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+    let grouped_frame_list: Array<Array<string>> = groupElementsByNumber(frame_list);
+
+    let static_list: Array<string> = ["SoilBeach0087_11_S.jpg", "sor_tischdecke_720x480.jpg"]
+        .map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+
+    let scene_options = new testscene.SceneOptions(base_dir, static_list);
+    let scene = new testscene.Scene(grouped_frame_list, scene_options);
+    scene.zipAll();
+
+    return scene;
+})();

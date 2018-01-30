@@ -31,11 +31,11 @@ export interface ISceneOptions{
 };
 
 export class Scene{
-    protected path_list : Array<string>;
+    protected path_list : Array<Array<string>>;
     protected counter: number;
     public options: ISceneOptions;
 
-    constructor(path_list: Array<string>, options:ISceneOptions=new SceneOptions()){
+    constructor(path_list: Array<Array<string>>, options:ISceneOptions=new SceneOptions()){
         this.path_list = path_list;
         this.options = options;
         this.counter = 0;
@@ -49,21 +49,19 @@ export class Scene{
         let that = this;
         let counter = 0;
 
-        this.path_list.forEach((_path: string) => {
-            if(_path.substr(-(".zip".length)) !== ".zip"){
-                let path_zip = that.replaceExtWithZip(_path);
-                let full_path_zip = path.join(that.options.base_dir, path_zip);
+        this.path_list.forEach((path_group: Array<string>) => {
+            let path_zip = that.replaceExtWithZip(path_group[0]);
+            let full_path_zip = path.join(that.options.base_dir, path_zip);
 
-                if(!fs.existsSync(full_path_zip)){
-                    let files = that.options.static_list.concat([_path]);
-                    zipToDisk(files, path_zip, that.options.base_dir);
-                    if(counter >= that.path_list.length){
-                        callback();
-                        return;
-                    }
-                    counter++;
-
+            if(!fs.existsSync(full_path_zip)){
+                let files = that.options.static_list.concat(path_group);
+                zipToDisk(files, path_zip, that.options.base_dir);
+                if(counter >= that.path_list.length){
+                    callback();
+                    return;
                 }
+                counter++;
+
             }
         })
         callback();
@@ -74,6 +72,6 @@ export class Scene{
         this.counter++;
         if (this.counter >= this.path_list.length)
             this.counter = 0;
-        return this.replaceExtWithZip(this.path_list[this.counter]);
+        return this.replaceExtWithZip(this.path_list[this.counter][0]);
     }
 }

@@ -35,19 +35,17 @@ class Scene {
     zipAll(callback = () => { }) {
         let that = this;
         let counter = 0;
-        this.path_list.forEach((_path) => {
-            if (_path.substr(-(".zip".length)) !== ".zip") {
-                let path_zip = that.replaceExtWithZip(_path);
-                let full_path_zip = path.join(that.options.base_dir, path_zip);
-                if (!fs.existsSync(full_path_zip)) {
-                    let files = that.options.static_list.concat([_path]);
-                    zipToDisk(files, path_zip, that.options.base_dir);
-                    if (counter >= that.path_list.length) {
-                        callback();
-                        return;
-                    }
-                    counter++;
+        this.path_list.forEach((path_group) => {
+            let path_zip = that.replaceExtWithZip(path_group[0]);
+            let full_path_zip = path.join(that.options.base_dir, path_zip);
+            if (!fs.existsSync(full_path_zip)) {
+                let files = that.options.static_list.concat(path_group);
+                zipToDisk(files, path_zip, that.options.base_dir);
+                if (counter >= that.path_list.length) {
+                    callback();
+                    return;
                 }
+                counter++;
             }
         });
         callback();
@@ -56,7 +54,7 @@ class Scene {
         this.counter++;
         if (this.counter >= this.path_list.length)
             this.counter = 0;
-        return this.replaceExtWithZip(this.path_list[this.counter]);
+        return this.replaceExtWithZip(this.path_list[this.counter][0]);
     }
 }
 exports.Scene = Scene;
