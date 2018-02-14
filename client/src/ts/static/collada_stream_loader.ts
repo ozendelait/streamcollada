@@ -26,6 +26,28 @@ export class ColladaStreamLoader extends BaseStreamLoader{
         console.log(model);
         this.stream.load(model.scene);
         if(model.animations.length > 0){
+            console.log("yes 1");
+            let mixer = new THREE.AnimationMixer( model.scene ); // create global mixer
+            console.log("yes 2");
+            let x = model.animations[ 0 ];
+            mixer.clipAction( x ).play(); // play first animation clip
+            console.log("yes 3");
+            /*
+            console.log("yes 1");
+            var mixer = new THREE.AnimationMixer(model);
+            console.log("yes 2", model.animations[0].name);
+            var clip = THREE.AnimationClip.findByName(model.animations[0], model.animations[0].name);
+            console.log("yes 3");
+            var action = mixer.clipAction( clip );
+            console.log("yes 4");
+            action.play();
+            console.log("yes 5");
+
+            model.animations.forEach( function ( clip ) {
+                mixer.clipAction( clip ).play();
+                console.log("yes 6");
+            } );
+            */
 
             //this.mixer = new THREE.AnimationMixer(model.scene.children[0]);
             //console.log(this.mixer)

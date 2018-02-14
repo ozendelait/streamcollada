@@ -3,7 +3,8 @@ import {BaseStreamLoader, IStreamLoader} from "./stream_loader";
 import {ColladaStreamLoader} from "./collada_stream_loader";
 import {ObjStreamLoader} from "./obj_stream_loader";
 
-const REFRESH_MS = 150;
+
+const REFRESH_MS = 200;
 BaseStreamLoader.STREAM_LOADERS = [ObjStreamLoader, ColladaStreamLoader];
 const BASE_URL = "http://localhost:7070/"
 let current_url: string = "";
@@ -16,7 +17,7 @@ function refresh(){
 function streamOnLoaded(){
     stream.removeCurrent();
     stream.addLoaded();
-    setTimeout(refresh, REFRESH_MS);
+    //setTimeout(refresh, REFRESH_MS);
 }
 function receivedStreamLoader(sloader: BaseStreamLoader){
     stream.onLoaded = streamOnLoaded;
@@ -32,11 +33,10 @@ window.onhashchange = function(e) {
     setStreamLoader(window.location.hash.substring(1));
 }
 
+
 let stream = new SceneStream(document.body);
 stream.onLoaded = streamOnLoaded;
 let loader: IStreamLoader;
 setStreamLoader(window.location.hash.substring(1));
 //let collada_loader = new ColladaStreamLoader(stream);
 //let obj_loader = new ObjStreamLoader(stream);
-
-

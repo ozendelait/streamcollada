@@ -1,0 +1,2 @@
+collada-converter:	http://rmx.github.io/collada-converter/preview/examples/convert.html
+ThreeJS animation structure:	https://github.com/mrdoob/three.js/issues/6881
