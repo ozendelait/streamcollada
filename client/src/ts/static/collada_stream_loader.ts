@@ -25,13 +25,46 @@ export class ColladaStreamLoader extends BaseStreamLoader{
     public loadModelObject(model: THREE.ColladaModel){
         console.log(model);
         this.stream.load(model.scene);
+        if(model.skins.length > 0){
+            console.log("Animations are not supported");
+            /*
+            var child = model.skins[0];
+            console.log("yes 1");
+            var animation = new THREE.Animation(child, child.geometry.animation);
+            console.log("yes 2");
+            animation.play();
+            console.log("yes 3");
+            */
+        }
         if(model.animations.length > 0){
+            console.log("Animations are not supported");
+            /*
+            var animations = model.animations;
+            var avatar = model.scene;
+            var mixer = new THREE.AnimationMixer( avatar );
+            var action = mixer.clipAction( animations[ 0 ] ).play();
+            */
+
+            /*
+            // Get object animation
+            var sceneAnimationClip = model.animations[0];
+
+            // Create animation mixer and pass object to it
+            var mixer = new THREE.AnimationMixer(model);
+
+            // Create animation action and start it
+            var sceneAnimation = mixer.clipAction(sceneAnimationClip);
+            sceneAnimation.play();
+            */
+
+            /*
             console.log("yes 1");
             let mixer = new THREE.AnimationMixer( model.scene ); // create global mixer
             console.log("yes 2");
             let x = model.animations[ 0 ];
             mixer.clipAction( x ).play(); // play first animation clip
             console.log("yes 3");
+            */
             /*
             console.log("yes 1");
             var mixer = new THREE.AnimationMixer(model);

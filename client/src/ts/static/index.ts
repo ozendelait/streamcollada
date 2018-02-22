@@ -17,7 +17,7 @@ function refresh(){
 function streamOnLoaded(){
     stream.removeCurrent();
     stream.addLoaded();
-    //setTimeout(refresh, REFRESH_MS);
+    setTimeout(refresh, REFRESH_MS);
 }
 function receivedStreamLoader(sloader: BaseStreamLoader){
     stream.onLoaded = streamOnLoaded;

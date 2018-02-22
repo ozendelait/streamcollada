@@ -45,25 +45,36 @@ let res_options = {
     }
 };
 
+var SCENES : {[name: string] : testscene.Scene};
 
-app.get("/", (req:any, res:any) => {
-    res.render("index", data);
-}).post("/collada", (req:any, res:any) => {
-    let next = collada_scene.getNext();
-    res.sendFile(next, res_options, (err:any)=>{
-        console.log("sent '" + next + "'");
-    })
-}).post("/collada_path", (req:any, res:any) => {
-    let next = collada_path_scene.getNext();
-    res.sendFile(next, res_options, (err:any)=>{
-        console.log("sent '" + next + "'");
-    })
-}).post("/obj", (req:any, res:any) => {
-    let next = obj_scene.getNext();
-    res.sendFile(next, res_options, (err:any)=>{
-        console.log("sent '" + next + "'");
-    })
-});
+
+function init(): void{
+    SCENES = {
+        "collada_ball" : collada_scene,
+        "collada_path" : collada_path_scene,
+        "obj_ball" : obj_scene,
+        "collada_bones" : bones_scene,
+        "collada_sink" : sink_scene
+    };
+
+    app.get("/", (req:any, res:any) => {
+        res.render("index", data);
+    }).get("/scenes", (req:any, res:any) => {
+        res.json({
+            "scenes" : Object.keys(SCENES)
+        });
+    });
+
+    for(let scene_name in SCENES){
+        app.post("/" + scene_name, (req:any, res:any) => {
+            let scene : testscene.Scene = SCENES[scene_name];
+            let next_file : string = scene.getNext();
+            res.sendFile(next_file, res_options, (err:any)=>{
+                console.log("sent '" + next_file + "'");
+            });
+        });
+    }
+}
 
 
 function groupElementsByNumber(ar: Array<string>):Array<Array<string>>{
@@ -85,7 +96,7 @@ function groupElementsByNumber(ar: Array<string>):Array<Array<string>>{
     return grouped_array;
 }
 
-let collada_scene = (function(){
+var collada_scene = (function(){
     let base_dir = path.join(PATHS.RES_DIR);
     let subfolder = "ball_textured";
 
@@ -109,7 +120,7 @@ let collada_scene = (function(){
     return scene;
 })();
 
-let collada_path_scene = (function(){
+var collada_path_scene = (function(){
     let base_dir = path.join(PATHS.RES_DIR);
     let subfolder = "ball_path";
 
@@ -133,7 +144,7 @@ let collada_path_scene = (function(){
 })();
 
 
-let obj_scene = (function(){
+var obj_scene = (function(){
     let base_dir = path.join(PATHS.RES_DIR);
     let subfolder = "ball_obj";
 
@@ -156,3 +167,54 @@ let obj_scene = (function(){
 
     return scene;
 })();
+
+var bones_scene = (function(){
+    let base_dir = path.join(PATHS.RES_DIR);
+    let subfolder = "bones";
+
+    let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
+        .filter((el:string)=>{
+            return el.substr(-(".dae".length)) === ".dae";
+        }).map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+    let grouped_frame_list: Array<Array<string>> = groupElementsByNumber(frame_list);
+
+    let static_list: Array<string> = ["wildtextures_short-grass-field-seamless-texture.jpg"]
+        .map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+
+    let scene_options = new testscene.SceneOptions(base_dir, static_list);
+    let scene = new testscene.Scene(grouped_frame_list, scene_options);
+    scene.zipAll();
+
+    return scene;
+})();
+
+var sink_scene = (function(){
+    let base_dir = path.join(PATHS.RES_DIR);
+    let subfolder = "sink";
+
+    let frame_list: Array<string> = fs.readdirSync(path.join(base_dir, subfolder))
+        .filter((el:string)=>{
+            return el.substr(-(".dae".length)) === ".dae";
+        }).map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+    let grouped_frame_list: Array<Array<string>> = groupElementsByNumber(frame_list);
+
+    let static_list: Array<string> = ["floor.jpg", "granite.jpg", "wall.jpg"]
+        .map((el:string)=>{
+            return path.join(subfolder , el);
+        });
+
+    let scene_options = new testscene.SceneOptions(base_dir, static_list);
+    let scene = new testscene.Scene(grouped_frame_list, scene_options);
+    scene.zipAll();
+
+    return scene;
+})();
+
+
+init();
