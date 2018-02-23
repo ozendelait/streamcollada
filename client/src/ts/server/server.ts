@@ -1,10 +1,19 @@
 import * as express from "express";
 import * as path from "path";
+import * as http from "http"
 
 const PATHS = require( path.join(process.cwd(), "config", "paths") );
 
 const DEBUG = true;
 const PORT = 8080;
+
+const STREAMING_SERVER = {
+    host: "http://localhost",
+    path: "",
+    port: 7070,
+    method: "GET",
+    headers: {}
+};
 
 let app = express();
 
@@ -62,6 +71,35 @@ app.get("/", (req:any, res:any) => {
 });
 */
 
-app.get("/", (req:any, res:any) => {
-    res.render("index", data);
+app.get("/", (req:any, app_response:any) => {
+
+    let options = Object.assign({}, STREAMING_SERVER, {
+        path: "/scenes",
+        headers: { 'Content-Type': 'application/json' },
+        json: true
+    });
+
+    let sserver_req = http.get("http://localhost:7070/scenes", function(res) {
+        res.setEncoding('utf8');
+        var raw_body_data = ""
+        res.on('data', function(chunk) {
+            raw_body_data += chunk;
+        }).on('end', function() {
+            try{
+                const body_data = JSON.parse(raw_body_data);
+                data["navigation"] = {
+                    scenes : body_data.scenes
+                }
+                app_response.render("index", data);
+            }catch(e){
+                console.log('ERROR: ' + e.message)
+                app_response.status(505).send("Error<br/>" + JSON.stringify(e));
+            }
+            return;
+        })
+    }).on('error', function(e) {
+        console.log('ERROR: ' + e.message);
+        app_response.status(505).send("Error<br/>" + JSON.stringify(e));
+        return;
+    });
 })

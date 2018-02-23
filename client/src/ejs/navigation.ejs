@@ -1,0 +1,12 @@
+<nav id="navigation-box">
+    <h1>Spawn scenes and set the <br/>update rate in milliseconds</h1>
+    <table>
+        <% navigation.scenes.forEach( (scene_name) => { %>
+        <tr>
+            <td><input type="checkbox" id="<%= scene_name %>" /></td>
+            <td><label for="<%= scene_name %>"><%= scene_name %></label></td>
+            <td><input type="number" value="0" min="0" step="100"/></td>
+        </tr>
+        <% }) %>
+    </table>
+</nav>
