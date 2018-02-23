@@ -5,9 +5,11 @@ import {ObjStreamLoader} from "./obj_stream_loader";
 
 
 const REFRESH_MS = 200;
-BaseStreamLoader.STREAM_LOADERS = [ObjStreamLoader, ColladaStreamLoader];
-const BASE_URL = "http://localhost:7070/"
+const BASE_URL = "http://localhost:7070/";
+const CANVAS_CONTAINER = document.body;
+
 let current_url: string = "";
+BaseStreamLoader.STREAM_LOADERS = [ObjStreamLoader, ColladaStreamLoader];
 
 function refresh(){
     //collada_loader.loadZip("http://localhost:7070/collada", "post");
@@ -34,9 +36,11 @@ window.onhashchange = function(e) {
 }
 
 
-let stream = new SceneStream(document.body);
+let stream = new SceneStream(CANVAS_CONTAINER);
 stream.onLoaded = streamOnLoaded;
 let loader: IStreamLoader;
 setStreamLoader(window.location.hash.substring(1));
-//let collada_loader = new ColladaStreamLoader(stream);
-//let obj_loader = new ObjStreamLoader(stream);
+window.addEventListener("resize", (event) =>{
+    console.log(CANVAS_CONTAINER.clientWidth, CANVAS_CONTAINER.clientHeight);
+    stream.resize(CANVAS_CONTAINER.clientWidth, CANVAS_CONTAINER.clientHeight);
+});

@@ -49,6 +49,12 @@ export class SceneStream implements ISceneStream{
         this.render();
     }
 
+    public resize(width: number, height: number) : void{
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height);
+    }
+
     public onLoaded() : void{}
 
     public load(scene : ColladaObjects) : void{

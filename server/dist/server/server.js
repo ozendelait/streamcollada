@@ -45,8 +45,6 @@ function init() {
     app.get("/", (req, res) => {
         res.render("index", data);
     }).get("/scenes", (req, res) => {
-        console.log("SCENES");
-        console.log(Object.keys(SCENES));
         res.json({
             "scenes": Object.keys(SCENES)
         });

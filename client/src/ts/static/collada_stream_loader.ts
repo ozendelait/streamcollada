@@ -23,7 +23,6 @@ export class ColladaStreamLoader extends BaseStreamLoader{
         this.loadModelObject(this.cloader.parse(content));
     }
     public loadModelObject(model: THREE.ColladaModel){
-        console.log(model);
         this.stream.load(model.scene);
         if(model.skins.length > 0){
             console.log("Animations are not supported");
