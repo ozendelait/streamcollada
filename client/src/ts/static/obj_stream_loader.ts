@@ -25,9 +25,6 @@ export class ObjStreamLoader extends BaseStreamLoader{
         let model = this.objloader.parse(content);
         this.loadModelObject(model);
     }
-    public loadModelObject(model: THREE.Group){
-        this.stream.load(model);
-    }
 
     public loadTextureBuffer(name: string, arr: Uint8Array, callback: any){
         name = name.split('/').pop();

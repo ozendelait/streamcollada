@@ -2,11 +2,18 @@ import * as THREE from "three";
 const OrbitControls = require('three-orbit-controls')(THREE);
 
 
+export type ThreeObject = THREE.Object3D
+
 export interface ISceneStream{
-    load(scene: THREE.Object3D) : void;
+    load(scene_name: string, scene: THREE.Object3D) : void;
 }
 
-export type ColladaObjects = THREE.Scene | THREE.ColladaModel | THREE.Object3D | THREE.Group;
+interface ILabeledScene{
+    scene: ThreeObject;
+    name: string;
+}
+
+
 
 export class SceneStream implements ISceneStream{
 
@@ -16,12 +23,13 @@ export class SceneStream implements ISceneStream{
     protected renderer: THREE.WebGLRenderer;
     protected container: HTMLElement;
 
-    protected loaded_scene : ColladaObjects;
-    protected current_scene : ColladaObjects;
-
+    protected loaded_scene : ILabeledScene | null;
+    public scenes : Array<ILabeledScene>;
 
     constructor(container: HTMLElement){
         this.container = container;
+        this.scenes = [];
+        this.loaded_scene = null;
 
         this.scene = new THREE.Scene();
 
@@ -55,27 +63,47 @@ export class SceneStream implements ISceneStream{
         this.renderer.setSize(width, height);
     }
 
-    public onLoaded() : void{}
+    public getSceneIdByName(scene_name: string) : number{
+        return this.scenes.findIndex((lscene: ILabeledScene)=>{
+            return lscene.name == scene_name;
+        });
+    }
+    public onLoaded(scene_name: string) : void{}
 
-    public load(scene : ColladaObjects) : void{
-        this.loaded_scene = scene;
-        this.loaded_scene.up = new THREE.Vector3(0, 0, 0);
-        this.loaded_scene.scale.x = this.loaded_scene.scale.y = this.loaded_scene.scale.z = 150;
-        this.loaded_scene.updateMatrix();
-        this.onLoaded();
+    public load(scene_name: string, scene : ThreeObject) : void{
+        scene.up = new THREE.Vector3(0, 0, 0);
+        scene.scale.x = scene.scale.y = scene.scale.z = 150;
+        scene.updateMatrix();
+        this.loaded_scene = {
+            scene : scene,
+            name : scene_name
+        };
+
+        this.onLoaded(scene_name);
     }
 
     public addLoaded() : void{
-        this.current_scene = this.loaded_scene;
-        this.scene.add(this.loaded_scene);
+        let scene_id :number = this.getSceneIdByName(this.loaded_scene.name);
+        if(scene_id === -1){
+            this.scenes.push(this.loaded_scene);
+        }else{
+            this.clearScene(this.scenes[scene_id].name);
+            this.scenes[scene_id] = this.loaded_scene;
+        }
+        this.scene.add(this.loaded_scene.scene);
+
     }
 
-    public removeCurrent() : void{
-        this.removeThreeObject(this.current_scene);
-        this.current_scene = undefined;
-    }
+    public clearScene(scene_name?: string) : void{
+        console.log("ClearScene", scene_name)
+        if(scene_name){
+            let scene_id :number = this.getSceneIdByName(this.loaded_scene.name);
+            if(scene_id === -1)
+                return;
+            this.removeThreeObject(this.scenes[scene_id].scene);
+            return;
+        }
 
-    public clearScene() : void{
         while(this.scene.children.length > 0){
             this.removeThreeObject(this.scene.children[0]);
         }
@@ -96,7 +124,7 @@ export class SceneStream implements ISceneStream{
     }
 
 
-    protected removeThreeObject(obj : THREE.Object3D, parent?: THREE.Object3D | THREE.Scene) : void{
+    protected removeThreeObject(obj : ThreeObject, parent?: ThreeObject) : void{
         if(obj){
             if(obj.children){
                 while(obj.children.length > 0){

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {BaseStreamLoader} from "./stream_loader";
-import {ISceneStream} from "./scene_stream";
+import {ISceneStream, ThreeObject} from "./scene_stream";
+import {ColladaModel} from "three";
 const TextureColladaLoader = require("./texture_collada_loader");
 
 
@@ -20,10 +21,8 @@ export class ColladaStreamLoader extends BaseStreamLoader{
     }
 
     public loadModelString(content: string){
-        this.loadModelObject(this.cloader.parse(content));
-    }
-    public loadModelObject(model: THREE.ColladaModel){
-        this.stream.load(model.scene);
+        let model : ColladaModel = this.cloader.parse(content);
+
         if(model.skins.length > 0){
             console.log("Animations are not supported");
             /*
@@ -86,6 +85,7 @@ export class ColladaStreamLoader extends BaseStreamLoader{
             //let clip : THREE.AnimationAction = this.mixer.clipAction(model.animations[0]);
             //clip.play();
         }
+        this.loadModelObject(model.scene);
     }
 
     public loadTextureBuffer(name: string, arr: Uint8Array, callback: any){

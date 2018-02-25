@@ -1,4 +1,4 @@
-import {ISceneStream, ColladaObjects} from "./scene_stream";
+import {ISceneStream, ThreeObject} from "./scene_stream";
 const ajax = require("pajax");
 const JSZip= require("jszip");
 
@@ -7,6 +7,7 @@ export interface IStreamLoader{
     stream: ISceneStream;
     MODEL_EXT: RegExp;
 
+    setSceneName(name: string) : IStreamLoader;
     loadZipFile(file: string, method: string) : void;
     loadZip(zip: any) : void;
     loadZipModel(zip: any) : void;
@@ -19,6 +20,7 @@ export abstract class BaseStreamLoader implements IStreamLoader{
     public stream: ISceneStream;
     public ajax_options: object;
     public ajax_data : object;
+    public scene_name : string;
     public TEXTURE_EXT: RegExp;
     public MODEL_EXT: RegExp;
     static AXAJ_OPTIONS = {
@@ -64,8 +66,14 @@ export abstract class BaseStreamLoader implements IStreamLoader{
         this.stream =  stream;
         this.ajax_options = BaseStreamLoader.AXAJ_OPTIONS;
         this.ajax_data = null;
+        this.scene_name = "";
         this.TEXTURE_EXT = /\.(jpg|jpeg|png)$/;
         this.MODEL_EXT = /\.$/;
+    }
+
+    public setSceneName(name: string) : IStreamLoader{
+        this.scene_name = name;
+        return this;
     }
 
     public loadZipFile(file: string, method: string){
@@ -89,8 +97,11 @@ export abstract class BaseStreamLoader implements IStreamLoader{
 
         });
     }
-    public loadModelObject(model: ColladaObjects){
-        this.stream.load(model);
+    public loadModelObject(model: ThreeObject){
+        if(!this.scene_name){
+            this.scene_name = (+ new Date()).toString();
+        }
+        this.stream.load(this.scene_name, model);
     }
     public abstract loadModelString(content: string) : void;
 
